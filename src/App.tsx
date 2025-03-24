@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+/// <reference types="react" />
+import { useState, useCallback } from 'react';
 import FileUpload from './components/FileUpload';
 import DataFilter from './components/DataFilter';
 import FileInfo from './components/FileInfo';
@@ -52,7 +53,7 @@ function App() {
   }, []);
 
   const handleB2BColumnSelect = useCallback((column: string) => {
-    setActiveB2BColumns(prev => {
+    setActiveB2BColumns((prev: Set<string>) => {
       const newColumns = new Set(prev);
       if (newColumns.has(column)) {
         newColumns.delete(column);
@@ -64,7 +65,7 @@ function App() {
   }, []);
 
   const handleB2CColumnSelect = useCallback((column: string) => {
-    setActiveB2CColumns(prev => {
+    setActiveB2CColumns((prev: Set<string>) => {
       const newColumns = new Set(prev);
       if (newColumns.has(column)) {
         newColumns.delete(column);
@@ -88,7 +89,7 @@ function App() {
                 <img
                   src="/logo.png"
                   alt="Company Logo"
-                  className="w-70 h-auto"
+                  className="w-45 h-20"
                 />
               </div>
 
@@ -103,7 +104,7 @@ function App() {
               <img
                 src="/logo.png"
                 alt="Company Logo"
-                className="w-70 h-auto"
+                className="w-45 h-20"
               />
             </div>
           )}
