@@ -30,3 +30,5 @@ export function StatCard({ title, items, icon: Icon }: StatCardProps) {
         ))}
       </div>
     </div>
+  );
+}
