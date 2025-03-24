@@ -25,17 +25,20 @@ function App() {
   const [b2cFilteredData, setB2CFilteredData] = useState<B2CData[] | null>(null);
   const [showB2BUnknowns, setShowB2BUnknowns] = useState(false);
   const [showB2CUnknowns, setShowB2CUnknowns] = useState(false);
+  const [showUploadSection, setShowUploadSection] = useState(true);
 
   const handleB2BDataLoaded = useCallback((data: B2BData[], fileName: string) => {
     setB2BData({ data, fileName });
     setB2BFilteredData(data);
     setActiveB2BColumns(new Set());
+    setShowUploadSection(false);
   }, []);
 
   const handleB2CDataLoaded = useCallback((data: B2CData[], fileName: string) => {
     setB2CData({ data, fileName });
     setB2CFilteredData(data);
     setActiveB2CColumns(new Set());
+    setShowUploadSection(false);
   }, []);
 
   const handleB2BFiltered = useCallback((filteredData: B2BData[], showUnknowns: boolean) => {
@@ -76,20 +79,44 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Data Visualization Dashboard
-          </h1>
-          <p className="text-lg text-gray-600">
-            Upload your B2B or B2C data to get started
-          </p>
+          {showUploadSection && (
+            <>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              </h1>
+
+              <div className="flex justify-center mb-6">
+                <img
+                  src="/logo.png"
+                  alt="Company Logo"
+                  className="w-200 h-auto"
+                />
+              </div>
+
+              <p className="text-lg text-gray-600">
+                Upload your B2B or B2C data to get started
+              </p>
+            </>
+          )}
+
+          {!showUploadSection && (
+            <div className="flex justify-center mb-8">
+              <img
+                src="/logo.png"
+                alt="Company Logo"
+                className="w-200 h-auto"
+              />
+            </div>
+          )}
         </header>
 
-        <div className="flex flex-col md:flex-row gap-6 justify-center items-stretch mb-8">
-          <FileUpload type="b2b" onDataLoaded={handleB2BDataLoaded as (data: B2BData[] | B2CData[], fileName: string) => void} />
-          <FileUpload type="b2c" onDataLoaded={handleB2CDataLoaded as (data: B2BData[] | B2CData[], fileName: string) => void} />
-        </div>
+        {showUploadSection && (
+          <div className="flex flex-col md:flex-row gap-6 justify-center items-stretch mb-8">
+            <FileUpload type="b2b" onDataLoaded={handleB2BDataLoaded as (data: B2BData[] | B2CData[], fileName: string) => void} />
+            <FileUpload type="b2c" onDataLoaded={handleB2CDataLoaded as (data: B2BData[] | B2CData[], fileName: string) => void} />
+          </div>
+        )}
 
-        {(b2bData.data || b2cData.data) && (
+        {(b2bData.data || b2cData.data) && showUploadSection && (
           <div className="space-y-8">
             <FileInfo
               b2bFileName={b2bData.fileName}
@@ -97,7 +124,12 @@ function App() {
               b2bRecords={b2bData.data?.length}
               b2cRecords={b2cData.data?.length}
             />
-            <FilterNotes />
+          </div>
+        )}
+
+        {(b2bData.data || b2cData.data) && (
+          <div className="space-y-8 mb-8">
+            <FilterNotes initialTitle="Edit Title" />
           </div>
         )}
 
