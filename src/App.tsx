@@ -103,7 +103,7 @@ function App() {
               <img
                 src="/logo.png"
                 alt="Company Logo"
-                className="w-200 h-auto"
+                className="w-70 h-auto"
               />
             </div>
           )}
