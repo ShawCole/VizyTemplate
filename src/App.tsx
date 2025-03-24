@@ -4,6 +4,8 @@ import FileUpload from './components/FileUpload';
 import DataFilter from './components/DataFilter';
 import FileInfo from './components/FileInfo';
 import FilterNotes from './components/FilterNotes';
+import LogoSizeControl from './components/LogoSizeControl';
+import LogoUpload from './components/LogoUpload';
 import ContactData from './components/sections/ContactData';
 import TopHighlights from './components/sections/TopHighlights';
 import CompanyDetails from './components/sections/CompanyDetails';
@@ -27,6 +29,8 @@ function App() {
   const [showB2BUnknowns, setShowB2BUnknowns] = useState(false);
   const [showB2CUnknowns, setShowB2CUnknowns] = useState(false);
   const [showUploadSection, setShowUploadSection] = useState(true);
+  const [logoSize, setLogoSize] = useState('w-[180px] h-auto');
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   const handleB2BDataLoaded = useCallback((data: B2BData[], fileName: string) => {
     setB2BData({ data, fileName });
@@ -78,6 +82,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      <LogoSizeControl size={logoSize} onSizeChange={setLogoSize} />
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-16">
           {showUploadSection && (
@@ -86,10 +91,9 @@ function App() {
               </h1>
 
               <div className="flex justify-center mb-6">
-                <img
-                  src="/logo.png"
-                  alt="Company Logo"
-                  className="w-45 h-20"
+                <LogoUpload
+                  className={logoSize}
+                  onLogoChange={setLogoUrl}
                 />
               </div>
 
@@ -101,11 +105,18 @@ function App() {
 
           {!showUploadSection && (
             <div className="flex justify-center mb-8">
-              <img
-                src="/logo.png"
-                alt="Company Logo"
-                className="w-45 h-20"
-              />
+              {logoUrl ? (
+                <img
+                  src={logoUrl}
+                  alt="Company Logo"
+                  className={logoSize}
+                />
+              ) : (
+                <LogoUpload
+                  className={logoSize}
+                  onLogoChange={setLogoUrl}
+                />
+              )}
             </div>
           )}
         </header>
