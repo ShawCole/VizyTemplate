@@ -1,5 +1,6 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { useChartColors } from '../../contexts/ChartColorContext';
 
 interface ChartData {
   name: string;
@@ -13,7 +14,7 @@ interface DoughnutChartProps {
   showUnknowns?: boolean;
 }
 
-const COLORS = ['#60A5FA', '#818CF8', '#A78BFA', '#C084FC'];
+const RADIAN = Math.PI / 180;
 
 export function DoughnutChart({
   data,
@@ -21,6 +22,7 @@ export function DoughnutChart({
   isSemi = false,
   showUnknowns = false
 }: DoughnutChartProps) {
+  const { colors } = useChartColors();
   const isMaritalOrChildren = title === 'Marital Status' || title === 'Children';
 
   // Filter out Unknown data when showUnknowns is false
@@ -36,6 +38,33 @@ export function DoughnutChart({
     if (b.name === 'Unknown') return 1;
     return 0;
   });
+
+  const renderCustomizedLabel = (props: any) => {
+    const { cx, cy, midAngle, innerRadius, outerRadius, percent, name, fill } = props;
+    // Reduce the radius multiplier to bring labels closer to the chart
+    const radius = outerRadius * 1.15;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    // For semi-doughnut charts, adjust Y position to ensure labels stay above the chart
+    const adjustedY = isSemi ? Math.min(y, cy - 20) : y;
+
+    // Calculate text anchor based on position relative to center
+    const textAnchor = x > cx ? 'start' : 'end';
+
+    return (
+      <text
+        x={x}
+        y={adjustedY}
+        fill={fill}
+        textAnchor={textAnchor}
+        dominantBaseline="central"
+        fontSize="18px"
+      >
+        {`${name} (${(percent * 100).toFixed(0)}%)`}
+      </text>
+    );
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -54,21 +83,17 @@ export function DoughnutChart({
               endAngle={isSemi ? 0 : 360}
               innerRadius="50%"
               outerRadius={isSemi ? "80%" : "100%"}
-              paddingAngle={0}
+              paddingAngle={2}
               dataKey="value"
-              label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-              labelLine
+              label={renderCustomizedLabel}
+              labelLine={true}
               animationBegin={0}
               animationDuration={600}
               animationEasing="ease"
               isAnimationActive={true}
-              labelStyle={{
-                fontSize: '18px',
-                fill: '#374151'
-              }}
             >
               {sortedData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell key={`cell-${index}`} fill={colors.doughnut[index % colors.doughnut.length]} />
               ))}
             </Pie>
           </PieChart>

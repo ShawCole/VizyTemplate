@@ -1,5 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { useChartColors } from '../../contexts/ChartColorContext';
 
 interface ChartData {
   name: string;
@@ -9,17 +10,26 @@ interface ChartData {
 interface VerticalBarChartProps {
   data: ChartData[];
   title: string;
-  color: string;
   showUnknowns?: boolean;
 }
 
-export function VerticalBarChart({ data, title, color, showUnknowns = false }: VerticalBarChartProps) {
+export function VerticalBarChart({ data, title, showUnknowns = false }: VerticalBarChartProps) {
+  const { colors } = useChartColors();
   const isFinancialChart = title.includes('Income') || title.includes('Net Worth');
 
   // Filter out Unknown data when showUnknowns is false
   const displayData = showUnknowns
     ? data
     : data.filter(item => item.name !== 'Unknown');
+
+  // Get the appropriate color based on the chart type
+  const getChartColor = () => {
+    if (title.includes('Income')) return colors.income;
+    if (title.includes('Net Worth')) return colors.netWorth;
+    if (title.includes('Company Size')) return colors.companySize;
+    if (title.includes('Company Revenue')) return colors.companyRevenue;
+    return colors.bar;
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -55,7 +65,7 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false }: V
             <Bar
               key={`vertical-bar-${title}`}
               dataKey="value"
-              fill={color}
+              fill={getChartColor()}
               radius={[4, 4, 0, 0]}
               animationBegin={0}
               animationDuration={600}

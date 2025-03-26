@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useChartColors } from '../../contexts/ChartColorContext';
 
 interface ChartData {
   name: string;
@@ -10,7 +11,6 @@ interface ChartData {
 interface HorizontalBarChartProps {
   data: ChartData[];
   title: string;
-  color: string;
   initialDisplay?: number;
   showUnknowns?: boolean;
 }
@@ -18,10 +18,10 @@ interface HorizontalBarChartProps {
 export function HorizontalBarChart({
   data,
   title,
-  color,
   initialDisplay = 5,
   showUnknowns = false
 }: HorizontalBarChartProps) {
+  const { colors } = useChartColors();
   const [isExpanded, setIsExpanded] = useState(false);
   const [chartHeight, setChartHeight] = useState(300);
   const [labelWidth, setLabelWidth] = useState(120);
@@ -240,6 +240,17 @@ export function HorizontalBarChart({
     };
   };
 
+  // Get the appropriate color based on the chart type
+  const getChartColor = () => {
+    if (isIndustriesChart) return colors.industries;
+    if (isJobTitlesChart) return colors.jobTitles;
+    if (isDepartmentsChart) return colors.departments;
+    if (isSeniorityChart) return colors.seniority;
+    if (isGenderChart) return colors.gender;
+    if (isAgeChart) return colors.age;
+    return colors.bar;
+  };
+
   return (
     <div
       className="bg-white rounded-lg shadow-md p-6"
@@ -338,7 +349,7 @@ export function HorizontalBarChart({
             <Bar
               key={`horizontal-bar-${title}`}
               dataKey="value"
-              fill={color}
+              fill={getChartColor()}
               radius={[0, 4, 4, 0]}
               isAnimationActive={!skipExpandAnimation}
               animationBegin={0}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { useChartColors } from '../../contexts/ChartColorContext';
 
 interface ChartData {
   name: string;
@@ -9,11 +10,12 @@ interface ChartData {
 interface BarChartProps {
   data: ChartData[];
   title: string;
-  color?: string;
   vertical?: boolean;
 }
 
-export default function BarChart({ data, title, color = '#4F46E5', vertical = false }: BarChartProps) {
+export default function BarChart({ data, title, vertical = false }: BarChartProps) {
+  const { colors } = useChartColors();
+
   if (!data.length) return null;
 
   return (
@@ -39,7 +41,7 @@ export default function BarChart({ data, title, color = '#4F46E5', vertical = fa
             <Tooltip />
             <Bar
               dataKey="value"
-              fill={color}
+              fill={colors.bar}
               radius={vertical ? [0, 4, 4, 0] : [4, 4, 0, 0]}
               animationBegin={0}
               animationDuration={800}

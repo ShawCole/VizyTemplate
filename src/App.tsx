@@ -6,6 +6,7 @@ import FileInfo from './components/FileInfo';
 import FilterNotes from './components/FilterNotes';
 import LogoSizeControl from './components/LogoSizeControl';
 import LogoUpload from './components/LogoUpload';
+import ChartColorControls from './components/ChartColorControls';
 import ContactData from './components/sections/ContactData';
 import TopHighlights from './components/sections/TopHighlights';
 import CompanyDetails from './components/sections/CompanyDetails';
@@ -13,13 +14,15 @@ import AudienceDemographics from './components/sections/AudienceDemographics';
 import FinancialDetails from './components/sections/FinancialDetails';
 import { B2BData, B2CData } from './types/data';
 import { getAvailableColumns } from './utils/validation';
+import { ChartColorProvider, useChartColors } from './contexts/ChartColorContext';
 
 interface DataState {
   data: B2BData[] | B2CData[] | null;
   fileName: string;
 }
 
-function App() {
+function AppContent() {
+  const { colors, updateColor } = useChartColors();
   const [b2bData, setB2BData] = useState<DataState>({ data: null, fileName: '' });
   const [b2cData, setB2CData] = useState<DataState>({ data: null, fileName: '' });
   const [activeB2BColumns, setActiveB2BColumns] = useState<Set<string>>(new Set());
@@ -31,19 +34,36 @@ function App() {
   const [showUploadSection, setShowUploadSection] = useState(true);
   const [logoSize, setLogoSize] = useState('w-[180px] h-auto');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [isB2BView, setIsB2BView] = useState(true);
 
-  const handleB2BDataLoaded = useCallback((data: B2BData[], fileName: string) => {
+  const handleB2BDataLoaded = useCallback((data: any, fileName: string) => {
+    // Set B2B data
     setB2BData({ data, fileName });
     setB2BFilteredData(data);
     setActiveB2BColumns(new Set());
-    setShowUploadSection(false);
-  }, []);
 
-  const handleB2CDataLoaded = useCallback((data: B2CData[], fileName: string) => {
+    // Also set B2C data with the same content
     setB2CData({ data, fileName });
     setB2CFilteredData(data);
     setActiveB2CColumns(new Set());
+
     setShowUploadSection(false);
+    setIsB2BView(true);
+  }, []);
+
+  const handleB2CDataLoaded = useCallback((data: any, fileName: string) => {
+    // Set B2C data
+    setB2CData({ data, fileName });
+    setB2CFilteredData(data);
+    setActiveB2CColumns(new Set());
+
+    // Also set B2B data with the same content
+    setB2BData({ data, fileName });
+    setB2BFilteredData(data);
+    setActiveB2BColumns(new Set());
+
+    setShowUploadSection(false);
+    setIsB2BView(false);
   }, []);
 
   const handleB2BFiltered = useCallback((filteredData: B2BData[], showUnknowns: boolean) => {
@@ -80,9 +100,25 @@ function App() {
     });
   }, []);
 
+  const handleViewChange = (isB2B: boolean) => {
+    setIsB2BView(isB2B);
+  };
+
+  const currentData = isB2BView ? b2bData.data : b2cData.data;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      <LogoSizeControl size={logoSize} onSizeChange={setLogoSize} />
+      <div className="fixed top-4 right-4 flex flex-col gap-4">
+        <LogoSizeControl size={logoSize} onSizeChange={setLogoSize} />
+        <ChartColorControls
+          colors={colors}
+          onColorChange={updateColor}
+          b2bData={b2bData.data}
+          b2cData={b2cData.data}
+          isB2BView={isB2BView}
+          onViewChange={handleViewChange}
+        />
+      </div>
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-16">
           {showUploadSection && (
@@ -145,21 +181,23 @@ function App() {
           </div>
         )}
 
-        {b2bData.data && (
+        {currentData && (
           <div className="space-y-6 mt-12">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6">B2B Dataset</h2>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+                {isB2BView ? 'B2B Dataset' : 'B2C Dataset'}
+              </h2>
               <DataFilter
-                type="b2b"
-                availableColumns={getAvailableColumns(b2bData.data, 'b2b')}
-                activeColumns={activeB2BColumns}
-                onColumnSelect={handleB2BColumnSelect}
-                data={b2bData.data}
-                fileName={b2bData.fileName}
-                onDataFiltered={handleB2BFiltered}
-                showUnknowns={showB2BUnknowns}
+                type={isB2BView ? 'b2b' : 'b2c'}
+                availableColumns={getAvailableColumns(currentData, isB2BView ? 'b2b' : 'b2c')}
+                activeColumns={isB2BView ? activeB2BColumns : activeB2CColumns}
+                onColumnSelect={isB2BView ? handleB2BColumnSelect : handleB2CColumnSelect}
+                data={currentData}
+                fileName={isB2BView ? b2bData.fileName : b2cData.fileName}
+                onDataFiltered={isB2BView ? handleB2BFiltered : handleB2CFiltered}
+                showUnknowns={isB2BView ? showB2BUnknowns : showB2CUnknowns}
               />
-              {b2bFilteredData && (
+              {isB2BView && b2bFilteredData && (
                 <div className="space-y-6">
                   <ContactData data={b2bFilteredData} />
                   <div className="space-y-6">
@@ -168,29 +206,13 @@ function App() {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-        )}
-
-        {b2cData.data && (
-          <div className="space-y-6 mt-12">
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6">B2C Dataset</h2>
-              <DataFilter
-                type="b2c"
-                availableColumns={getAvailableColumns(b2cData.data, 'b2c')}
-                activeColumns={activeB2CColumns}
-                onColumnSelect={handleB2CColumnSelect}
-                data={b2cData.data}
-                fileName={b2cData.fileName}
-                onDataFiltered={handleB2CFiltered}
-                showUnknowns={showB2CUnknowns}
-              />
-              {b2cFilteredData && (
+              {!isB2BView && b2cFilteredData && (
                 <div className="space-y-6">
                   <ContactData data={b2cFilteredData} />
-                  <AudienceDemographics data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
-                  <FinancialDetails data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
+                  <div className="space-y-6">
+                    <AudienceDemographics data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
+                    <FinancialDetails data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
+                  </div>
                 </div>
               )}
             </div>
@@ -198,6 +220,14 @@ function App() {
         )}
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ChartColorProvider>
+      <AppContent />
+    </ChartColorProvider>
   );
 }
 

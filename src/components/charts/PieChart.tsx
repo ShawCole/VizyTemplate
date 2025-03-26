@@ -1,5 +1,6 @@
 import React from 'react';
 import { PieChart as RechartsPieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { useChartColors } from '../../contexts/ChartColorContext';
 
 interface ChartData {
   name: string;
@@ -9,18 +10,16 @@ interface ChartData {
 interface PieChartProps {
   data: ChartData[];
   title: string;
-  colors?: string[];
   variant?: 'pie' | 'doughnut' | 'semi-doughnut';
 }
 
-const DEFAULT_COLORS = ['#4F46E5', '#7C3AED', '#EC4899', '#F59E0B', '#10B981'];
-
-export default function PieChart({ 
-  data, 
-  title, 
-  colors = DEFAULT_COLORS,
+export default function PieChart({
+  data,
+  title,
   variant = 'pie'
 }: PieChartProps) {
+  const { colors } = useChartColors();
+
   if (!data.length) return null;
 
   const isSemi = variant === 'semi-doughnut';
@@ -45,7 +44,7 @@ export default function PieChart({
               dataKey="value"
             >
               {data.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                <Cell key={`cell-${index}`} fill={colors.pie[index % colors.pie.length]} />
               ))}
             </Pie>
             <Tooltip />

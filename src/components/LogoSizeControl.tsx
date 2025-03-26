@@ -33,10 +33,10 @@ const LogoSizeControl: React.FC<LogoSizeControlProps> = ({ size, onSizeChange })
     };
 
     return (
-        <div className="fixed top-4 right-4 z-50 bg-white rounded-lg shadow-lg p-3 border border-gray-200">
+        <div className="fixed top-4 right-4 z-50 bg-white rounded-lg shadow-lg pl-5 pr-3 py-3 border border-gray-200 w-[238px]">
             <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
-                    <label htmlFor="logo-size" className="text-sm font-medium text-gray-700">
+                    <label htmlFor="logo-size" className="text-20px font-medium text-gray-700">
                         Logo Size:
                     </label>
                     <select
