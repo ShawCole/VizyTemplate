@@ -15,6 +15,7 @@ import FinancialDetails from './components/sections/FinancialDetails';
 import { B2BData, B2CData } from './types/data';
 import { getAvailableColumns } from './utils/validation';
 import { ChartColorProvider, useChartColors } from './contexts/ChartColorContext';
+import ViewToggle from './components/ViewToggle';
 
 interface DataState {
   data: B2BData[] | B2CData[] | null;
@@ -109,14 +110,19 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <div className="fixed top-4 right-4 flex flex-col gap-4">
-        <LogoSizeControl size={logoSize} onSizeChange={setLogoSize} />
+        <ViewToggle
+          isB2BView={isB2BView}
+          onViewChange={handleViewChange}
+        />
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-gray-800">Logo Size</h3>
+            <LogoSizeControl size={logoSize} onSizeChange={setLogoSize} />
+          </div>
+        </div>
         <ChartColorControls
           colors={colors}
           onColorChange={updateColor}
-          b2bData={b2bData.data}
-          b2cData={b2cData.data}
-          isB2BView={isB2BView}
-          onViewChange={handleViewChange}
         />
       </div>
       <div className="container mx-auto px-4 py-12">
