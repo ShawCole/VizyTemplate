@@ -22,6 +22,7 @@ interface ChartColorControlsProps {
         netWorth: string;
         companySize: string;
         companyRevenue: string;
+        accentColor: string;
     };
 }
 
@@ -95,7 +96,7 @@ export default function ChartColorControls({
     colors,
     onColorChange
 }: ChartColorControlsProps) {
-    const { updateBaseColor, updateColor } = useChartColors();
+    const { updateBaseColor, updateColor, updateAccentColor } = useChartColors();
     const [activePicker, setActivePicker] = React.useState<string | null>(null);
     const [isCustomSize, setIsCustomSize] = useState(false);
 
@@ -118,6 +119,11 @@ export default function ChartColorControls({
             label: 'Base Color',
             type: 'baseColor',
             color: colors.baseColor
+        },
+        {
+            label: 'Accent Color',
+            type: 'accentColor',
+            color: colors.accentColor
         },
         {
             label: 'Primary Color 1',
@@ -144,6 +150,8 @@ export default function ChartColorControls({
     const handleColorChange = (type: string, newColor: string, isBaseColor = false) => {
         if (isBaseColor) {
             updateBaseColor(newColor);
+        } else if (type === 'accentColor') {
+            updateAccentColor(newColor);
         } else {
             updateColor(type, newColor);
         }

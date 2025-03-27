@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --accent-color: #60A5FA;
+    --accent-color-hover: #3B82F6;
+}
+
+@layer base {
+    .accent-bg {
+        @apply transition-colors duration-200;
+        background-color: var(--accent-color);
+    }
+
+    .accent-bg-hover:hover {
+        background-color: var(--accent-color-hover);
+    }
+
+    .accent-text {
+        @apply transition-colors duration-200;
+        color: var(--accent-color);
+    }
+
+    .accent-text-hover:hover {
+        color: var(--accent-color-hover);
+    }
+
+    .accent-border {
+        @apply transition-colors duration-200;
+        border-color: var(--accent-color);
+    }
+
+    .accent-border-hover:hover {
+        border-color: var(--accent-color-hover);
+    }
+}

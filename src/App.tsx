@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import FileUpload from './components/FileUpload';
 import DataFilter from './components/DataFilter';
 import FileInfo from './components/FileInfo';
@@ -36,6 +36,21 @@ function AppContent() {
   const [logoSize, setLogoSize] = useState('180');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [isB2BView, setIsB2BView] = useState(true);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--accent-color', colors.accentColor);
+    root.style.setProperty('--accent-color-hover', adjustColor(colors.accentColor, -20, -20));
+  }, [colors.accentColor]);
+
+  // Function to darken a color
+  const adjustColor = (color: string, amount: number, blueAmount: number) => {
+    const hex = color.replace('#', '');
+    const r = Math.max(0, Math.min(255, parseInt(hex.slice(0, 2), 16) + amount));
+    const g = Math.max(0, Math.min(255, parseInt(hex.slice(2, 4), 16) + amount));
+    const b = Math.max(0, Math.min(255, parseInt(hex.slice(4, 6), 16) + blueAmount));
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  };
 
   const handleB2BDataLoaded = useCallback((data: any, fileName: string) => {
     // Set B2B data

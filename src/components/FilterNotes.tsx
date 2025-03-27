@@ -19,7 +19,7 @@ export default function FilterNotes({ initialTitle = "Edit Title" }: FilterNotes
   const [noteType, setNoteType] = useState<NoteType>('keyword');
   const [customText, setCustomText] = useState('');
   const [premadeText, setPremadeText] = useState('');
-  
+
   const keywordInputRef = useRef<HTMLInputElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -115,19 +115,18 @@ export default function FilterNotes({ initialTitle = "Edit Title" }: FilterNotes
         return (
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-2">
-              <div 
+              <div
                 className="inline-flex items-center px-3 py-1.5 rounded-full cursor-pointer transition-all duration-200"
                 onMouseEnter={() => setIsKeywordsHovered(true)}
                 onMouseLeave={() => setIsKeywordsHovered(false)}
                 onClick={handleKeywordClick}
                 style={{
-                  backgroundColor: isKeywordsHovered ? '#2563EB' : 'transparent',
+                  backgroundColor: isKeywordsHovered ? 'var(--accent-color)' : 'transparent',
                 }}
               >
-                <span 
-                  className={`text-sm font-medium transition-colors duration-200 ${
-                    isKeywordsHovered ? 'text-white' : 'text-gray-700'
-                  }`}
+                <span
+                  className={`text-sm font-medium transition-colors duration-200 ${isKeywordsHovered ? 'text-white' : 'text-gray-700'
+                    }`}
                 >
                   {isKeywordsHovered ? 'Add Keywords' : 'Keywords:'}
                 </span>
@@ -144,7 +143,7 @@ export default function FilterNotes({ initialTitle = "Edit Title" }: FilterNotes
                   onChange={(e) => setKeywordInput(e.target.value)}
                   onKeyDown={handleKeywordInputKeyDown}
                   onBlur={handleKeywordInputBlur}
-                  className="w-64 px-3 py-1.5 text-sm border border-gray-200 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-64 px-3 py-1.5 text-sm border border-gray-200 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                   placeholder="Type keywords, separate with commas"
                 />
               )}
@@ -157,8 +156,8 @@ export default function FilterNotes({ initialTitle = "Edit Title" }: FilterNotes
                 onMouseEnter={() => setHoveredKeyword(keyword)}
                 onMouseLeave={() => setHoveredKeyword(null)}
               >
-                <div 
-                  className="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full transition-all duration-200"
+                <div
+                  className="inline-flex items-center px-3 py-1.5 bg-gray-50 accent-text rounded-full transition-all duration-200"
                   style={{
                     paddingRight: hoveredKeyword === keyword ? '28px' : '12px'
                   }}
@@ -166,11 +165,10 @@ export default function FilterNotes({ initialTitle = "Edit Title" }: FilterNotes
                   <span className="text-sm whitespace-nowrap">{keyword}</span>
                   <button
                     onClick={() => removeKeyword(keyword)}
-                    className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 hover:bg-blue-100 rounded-full transition-opacity duration-200 ${
-                      hoveredKeyword === keyword 
-                        ? 'opacity-100' 
+                    className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 hover:bg-gray-100 rounded-full transition-opacity duration-200 ${hoveredKeyword === keyword
+                        ? 'opacity-100'
                         : 'opacity-0 pointer-events-none'
-                    }`}
+                      }`}
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -217,7 +215,7 @@ export default function FilterNotes({ initialTitle = "Edit Title" }: FilterNotes
               />
             </form>
           ) : (
-            <h3 
+            <h3
               className="text-2xl font-semibold text-gray-800 cursor-pointer hover:text-blue-600 transition-colors"
               onClick={handleTitleClick}
             >
@@ -236,25 +234,22 @@ export default function FilterNotes({ initialTitle = "Edit Title" }: FilterNotes
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-10 border border-gray-100">
                 <button
                   onClick={() => handleNoteTypeSelect('keyword')}
-                  className={`w-full px-4 py-2 text-left hover:bg-gray-50 ${
-                    noteType === 'keyword' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
-                  }`}
+                  className={`w-full px-4 py-2 text-left hover:bg-gray-50 ${noteType === 'keyword' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
+                    }`}
                 >
                   Keyword
                 </button>
                 <button
                   onClick={() => handleNoteTypeSelect('premade')}
-                  className={`w-full px-4 py-2 text-left hover:bg-gray-50 ${
-                    noteType === 'premade' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
-                  }`}
+                  className={`w-full px-4 py-2 text-left hover:bg-gray-50 ${noteType === 'premade' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
+                    }`}
                 >
                   Premade
                 </button>
                 <button
                   onClick={() => handleNoteTypeSelect('custom')}
-                  className={`w-full px-4 py-2 text-left hover:bg-gray-50 ${
-                    noteType === 'custom' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
-                  }`}
+                  className={`w-full px-4 py-2 text-left hover:bg-gray-50 ${noteType === 'custom' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
+                    }`}
                 >
                   Custom
                 </button>
