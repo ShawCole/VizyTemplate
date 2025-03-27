@@ -34,7 +34,9 @@ function AppContent() {
   const [showB2CUnknowns, setShowB2CUnknowns] = useState(false);
   const [showUploadSection, setShowUploadSection] = useState(true);
   const [logoSize, setLogoSize] = useState('180');
+  const [secondaryLogoSize, setSecondaryLogoSize] = useState('100');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [secondaryLogoUrl, setSecondaryLogoUrl] = useState<string | null>(null);
   const [isB2BView, setIsB2BView] = useState(true);
 
   useEffect(() => {
@@ -137,45 +139,75 @@ function AppContent() {
             </div>
           </div>
         </div>
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-gray-800">Secondary Logo Size</h3>
+            <div className="min-h-[32px]">
+              <LogoSizeControl size={secondaryLogoSize} onSizeChange={setSecondaryLogoSize} />
+            </div>
+          </div>
+        </div>
         <ChartColorControls
           colors={colors}
           onColorChange={updateColor}
         />
       </div>
       <div className="container mx-auto px-4 py-12">
-        <header className="text-center mb-16">
+        <header className="text-center mb-12">
           {showUploadSection && (
             <>
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
               </h1>
 
-              <div className="flex justify-center mb-6">
+              <div className="flex justify-center mb-16">
                 <LogoUpload
                   style={{ width: `${logoSize}px`, height: 'auto' }}
                   onLogoChange={setLogoUrl}
                 />
               </div>
 
-              <p className="text-lg text-gray-600">
-                Upload your B2B or B2C data to get started
-              </p>
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <h1 className="text-2xl font-semibold text-gray-800">Presented by:</h1>
+                <LogoUpload
+                  style={{ width: `${secondaryLogoSize}px`, height: 'auto' }}
+                  onLogoChange={setSecondaryLogoUrl}
+                />
+              </div>
+              <p className="text-lg text-gray-600">Upload your B2B or B2C data to get started</p>
             </>
           )}
 
           {!showUploadSection && (
-            <div className="flex justify-center mb-8">
-              {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt="Company Logo"
-                  style={{ width: `${logoSize}px`, height: 'auto' }}
-                />
-              ) : (
-                <LogoUpload
-                  style={{ width: `${logoSize}px`, height: 'auto' }}
-                  onLogoChange={setLogoUrl}
-                />
-              )}
+            <div className="flex flex-col items-center">
+              <div className="flex justify-center mb-10">
+                {logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt="Company Logo"
+                    style={{ width: `${logoSize}px`, height: 'auto' }}
+                  />
+                ) : (
+                  <LogoUpload
+                    style={{ width: `${logoSize}px`, height: 'auto' }}
+                    onLogoChange={setLogoUrl}
+                  />
+                )}
+              </div>
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <h1 className="text-2xl font-semibold text-gray-800">Presented by:</h1>
+                {secondaryLogoUrl ? (
+                  <img
+                    src={secondaryLogoUrl}
+                    alt="Secondary Logo"
+                    style={{ width: `${secondaryLogoSize}px`, height: 'auto' }}
+                  />
+                ) : (
+                  <LogoUpload
+                    style={{ width: `${secondaryLogoSize}px`, height: 'auto' }}
+                    onLogoChange={setSecondaryLogoUrl}
+                  />
+                )}
+              </div>
             </div>
           )}
         </header>
