@@ -117,7 +117,9 @@ function AppContent() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold text-gray-800">Logo Size</h3>
-            <LogoSizeControl size={logoSize} onSizeChange={setLogoSize} />
+            <div className="min-h-[32px]">
+              <LogoSizeControl size={logoSize} onSizeChange={setLogoSize} />
+            </div>
           </div>
         </div>
         <ChartColorControls
