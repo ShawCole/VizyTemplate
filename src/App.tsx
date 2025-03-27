@@ -33,7 +33,7 @@ function AppContent() {
   const [showB2BUnknowns, setShowB2BUnknowns] = useState(false);
   const [showB2CUnknowns, setShowB2CUnknowns] = useState(false);
   const [showUploadSection, setShowUploadSection] = useState(true);
-  const [logoSize, setLogoSize] = useState('w-[180px] h-auto');
+  const [logoSize, setLogoSize] = useState('180');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [isB2BView, setIsB2BView] = useState(true);
 
@@ -136,7 +136,7 @@ function AppContent() {
 
               <div className="flex justify-center mb-6">
                 <LogoUpload
-                  className={logoSize}
+                  style={{ width: `${logoSize}px`, height: 'auto' }}
                   onLogoChange={setLogoUrl}
                 />
               </div>
@@ -153,11 +153,11 @@ function AppContent() {
                 <img
                   src={logoUrl}
                   alt="Company Logo"
-                  className={logoSize}
+                  style={{ width: `${logoSize}px`, height: 'auto' }}
                 />
               ) : (
                 <LogoUpload
-                  className={logoSize}
+                  style={{ width: `${logoSize}px`, height: 'auto' }}
                   onLogoChange={setLogoUrl}
                 />
               )}
