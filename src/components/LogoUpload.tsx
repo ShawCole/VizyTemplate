@@ -32,7 +32,7 @@ const LogoUpload: React.FC<LogoUploadProps> = ({ className, onLogoChange }) => {
     };
 
     const handleFile = (file: File) => {
-        if (file.type === 'image/png' || file.type === 'image/svg+xml' || file.type === 'image/webp' || file.type.startsWith('image/')) {
+        if (file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const url = reader.result as string;
@@ -40,8 +40,6 @@ const LogoUpload: React.FC<LogoUploadProps> = ({ className, onLogoChange }) => {
                 onLogoChange(url);
             };
             reader.readAsDataURL(file);
-        } else {
-            alert('Please upload a PNG, SVG, or WebP file for best transparency support.');
         }
     };
 
@@ -69,23 +67,18 @@ const LogoUpload: React.FC<LogoUploadProps> = ({ className, onLogoChange }) => {
                 ref={fileInputRef}
                 type="file"
                 className="hidden"
-                accept="image/png,image/svg+xml,image/webp"
+                accept="image/*"
                 onChange={handleFileInput}
             />
             <div className={`
                 flex flex-col items-center justify-center p-6
+                border-2 border-dashed rounded-lg
                 transition-colors duration-200 cursor-pointer
-                ${!previewUrl && 'border-2 border-dashed rounded-lg'}
-                ${isDragging ? 'border-blue-500 bg-blue-50' : !previewUrl && 'border-gray-300 hover:border-gray-400'}
-                ${previewUrl ? 'bg-transparent' : 'bg-gray-50'}
+                ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
+                ${previewUrl ? 'bg-white' : 'bg-gray-50'}
             `}>
                 {previewUrl ? (
-                    <img
-                        src={previewUrl}
-                        alt="Uploaded logo"
-                        className={`${className} object-contain`}
-                        style={{ imageRendering: 'crisp-edges' }}
-                    />
+                    <img src={previewUrl} alt="Uploaded logo" className={className} />
                 ) : (
                     <>
                         <div className="text-4xl text-gray-400 mb-2">
@@ -94,7 +87,7 @@ const LogoUpload: React.FC<LogoUploadProps> = ({ className, onLogoChange }) => {
                         <p className="text-sm text-gray-600 text-center">
                             Upload Logo Here<br />
                             <span className="text-gray-400">
-                                Upload PNG, SVG, or WebP for transparency
+                                Click or drag and drop
                             </span>
                         </p>
                     </>
