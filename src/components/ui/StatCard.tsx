@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
 

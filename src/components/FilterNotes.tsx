@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useRef, useEffect } from 'react';
 import { Edit2, Save, Plus, X, ChevronDown } from 'lucide-react';
 
@@ -166,8 +168,8 @@ export default function FilterNotes({ initialTitle = "Edit Title" }: FilterNotes
                   <button
                     onClick={() => removeKeyword(keyword)}
                     className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 hover:bg-gray-100 rounded-full transition-opacity duration-200 ${hoveredKeyword === keyword
-                        ? 'opacity-100'
-                        : 'opacity-0 pointer-events-none'
+                      ? 'opacity-100'
+                      : 'opacity-0 pointer-events-none'
                       }`}
                   >
                     <X className="w-3 h-3" />

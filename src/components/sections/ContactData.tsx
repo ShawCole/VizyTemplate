@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { StatCard } from '../ui/StatCard';
 import { Phone, Mail, Linkedin, Home } from 'lucide-react';

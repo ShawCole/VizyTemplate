@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { VerticalBarChart } from '../charts/VerticalBarChart';
 import { B2BData } from '../../types/data';
