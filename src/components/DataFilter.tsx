@@ -37,6 +37,7 @@ const B2C_SUB_FILTERABLE_COLUMNS = [
   'CHILDREN',
   'INCOME_RANGE',
   'NET_WORTH',
+  'STATE',
   'EMAIL'
 ];
 
@@ -94,6 +95,13 @@ const SORT_ORDER: Record<string, string[]> = {
   'MARRIED': ['Yes', 'No'],
   'CHILDREN': ['Yes', 'No'],
   'EMAIL': ['Personal Email', 'Business Email'],
+  'STATE': [
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+  ],
   'COMPANY_EMPLOYEE_COUNT': [
     '1 to 10',
     '11 to 25',
@@ -148,7 +156,8 @@ const SORT_ORDER: Record<string, string[]> = {
 
 const COLUMN_DISPLAY_NAMES: Record<string, string> = {
   'PERSONAL_EMAIL': 'EMAIL',
-  'BUSINESS_EMAIL': 'EMAIL'
+  'BUSINESS_EMAIL': 'EMAIL',
+  'PERSONAL_STATE': 'STATE'
 };
 
 export default function DataFilter({
@@ -237,10 +246,17 @@ export default function DataFilter({
 
     if (!activeColumns.has(column)) {
       const values = getUniqueValues(column);
-      setSelectedSubFilters(prev => ({
-        ...prev,
-        [column]: new Set(values)
-      }));
+      if (column === 'STATE') {
+        setSelectedSubFilters(prev => ({
+          ...prev,
+          [column]: new Set(values)
+        }));
+      } else {
+        setSelectedSubFilters(prev => ({
+          ...prev,
+          [column]: new Set(values)
+        }));
+      }
     } else {
       setSelectedSubFilters(prev => {
         const newState = { ...prev };
@@ -275,6 +291,10 @@ export default function DataFilter({
             return item[field] && item[field].length > 0;
           });
         }
+        if (column === 'STATE') {
+          const rawValues = Array.from(values).map(v => getRawValue(column, v));
+          return rawValues.includes(item['PERSONAL_STATE']);
+        }
         const rawValues = Array.from(values).map(v => getRawValue(column, v));
         return rawValues.includes(item[column]);
       });
@@ -289,6 +309,16 @@ export default function DataFilter({
   const getUniqueValues = (column: string) => {
     if (column === 'EMAIL') {
       return ['Personal Email', 'Business Email'];
+    }
+
+    if (column === 'STATE') {
+      return [
+        'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+        'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+        'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+        'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+        'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+      ];
     }
 
     const values = new Set<string>();
@@ -332,9 +362,7 @@ export default function DataFilter({
     const subFilterableColumns = type === 'b2b'
       ? B2B_SUB_FILTERABLE_COLUMNS
       : B2C_SUB_FILTERABLE_COLUMNS;
-    return subFilterableColumns.includes(
-      column === 'PERSONAL_EMAIL' || column === 'BUSINESS_EMAIL' ? 'EMAIL' : column
-    );
+    return subFilterableColumns.includes(normalizeColumn(column));
   };
 
   const getColumnDisplayName = (column: string): string => {
@@ -342,7 +370,9 @@ export default function DataFilter({
   };
 
   const normalizeColumn = (column: string): string => {
-    return column === 'PERSONAL_EMAIL' || column === 'BUSINESS_EMAIL' ? 'EMAIL' : column;
+    if (column === 'PERSONAL_EMAIL' || column === 'BUSINESS_EMAIL') return 'EMAIL';
+    if (column === 'PERSONAL_STATE') return 'STATE';
+    return column;
   };
 
   const sortedColumns = useMemo(() => {
@@ -354,6 +384,7 @@ export default function DataFilter({
         'CHILDREN',
         'INCOME_RANGE',
         'NET_WORTH',
+        'PERSONAL_STATE',
         'EMAIL'
       ];
       return availableColumns.sort((a, b) => {
@@ -441,14 +472,21 @@ export default function DataFilter({
                   </button>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
+              <div className={`${column === 'STATE'
+                ? 'grid grid-rows-2 auto-rows-fr gap-2 py-2'
+                : 'flex flex-wrap gap-2 max-h-40 overflow-y-auto'
+                }`}
+                style={column === 'STATE' ? { gridTemplateColumns: 'repeat(25, minmax(0, 1fr))' } : undefined}>
                 {getUniqueValues(column).map((value) => (
                   <button
                     key={value}
                     onClick={() => handleSubFilterClick(column, value)}
-                    className={`px-3 py-1 rounded-full transition-colors ${selectedSubFilters[column]?.has(value)
-                      ? 'accent-bg text-white'
-                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                    className={`${column === 'STATE'
+                      ? 'text-xs h-8 w-8 flex items-center justify-center rounded'
+                      : 'px-3 py-1 rounded-full'
+                      } transition-colors ${selectedSubFilters[column]?.has(value)
+                        ? 'accent-bg text-white'
+                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                       }`}
                   >
                     {getDisplayValue(column, value)}

@@ -17,27 +17,28 @@ const B2C_REQUIRED_COLUMNS = [
   'CHILDREN',
   'NET_WORTH',
   'INCOME_RANGE',
+  'PERSONAL_STATE',
   'PERSONAL_EMAIL'
 ] as const;
 
 export function validateCSVColumns(headers: string[], type: DatasetType): string | null {
   const requiredColumns = type === 'b2b' ? B2B_REQUIRED_COLUMNS : B2C_REQUIRED_COLUMNS;
   const missingColumns = requiredColumns.filter(col => !headers.includes(col));
-  
+
   if (missingColumns.length === requiredColumns.length) {
     return `No valid columns found for ${type.toUpperCase()} data`;
   }
-  
+
   return null;
 }
 
 export function validateDataTypes(data: any[], type: DatasetType): string | null {
   try {
     const requiredColumns = type === 'b2b' ? B2B_REQUIRED_COLUMNS : B2C_REQUIRED_COLUMNS;
-    const invalidRows = data.filter(row => 
-      !requiredColumns.some(column => 
-        row[column] !== null && 
-        row[column] !== undefined && 
+    const invalidRows = data.filter(row =>
+      !requiredColumns.some(column =>
+        row[column] !== null &&
+        row[column] !== undefined &&
         row[column] !== ''
       )
     );
@@ -62,7 +63,7 @@ export function cleanData<T extends B2BData | B2CData>(data: any[], type: Datase
     return row;
   }).filter(row => {
     const requiredColumns = type === 'b2b' ? B2B_REQUIRED_COLUMNS : B2C_REQUIRED_COLUMNS;
-    
+
     // Check if at least one required field has valid data
     return requiredColumns.some(column => {
       const value = row[column];
@@ -73,15 +74,15 @@ export function cleanData<T extends B2BData | B2CData>(data: any[], type: Datase
 
 export function getAvailableColumns(data: any[], type: DatasetType): string[] {
   const allColumns = type === 'b2b' ? B2B_REQUIRED_COLUMNS : B2C_REQUIRED_COLUMNS;
-  return allColumns.filter(column => 
+  return allColumns.filter(column =>
     data.some(row => row[column] !== null && row[column] !== undefined && row[column] !== '')
   );
 }
 
 export function filterDataByColumn<T>(data: T[], column: string): T[] {
-  return data.filter(row => 
-    row[column as keyof T] !== null && 
-    row[column as keyof T] !== undefined && 
+  return data.filter(row =>
+    row[column as keyof T] !== null &&
+    row[column as keyof T] !== undefined &&
     row[column as keyof T] !== ''
   );
 }
