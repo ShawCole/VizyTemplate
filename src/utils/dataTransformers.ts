@@ -42,6 +42,14 @@ const GENDER_ORDER = [
   'U'  // Unknown
 ];
 
+const STATE_ORDER = [
+  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+];
+
 const INCOME_RANGE_ORDER = [
   'less than $20,000',
   '$20,000 to $44,999',
@@ -290,6 +298,16 @@ function sortTransformedData(
       if (b.originalName === 'Unknown') return -1;
       const aIndex = NET_WORTH_ORDER.indexOf(a.originalName);
       const bIndex = NET_WORTH_ORDER.indexOf(b.originalName);
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      return aIndex - bIndex;
+    });
+  } else if (key === ('PERSONAL_STATE' as DataKey)) {
+    return data.sort((a, b) => {
+      if (a.originalName === 'Unknown') return 1;
+      if (b.originalName === 'Unknown') return -1;
+      const aIndex = STATE_ORDER.indexOf(a.originalName);
+      const bIndex = STATE_ORDER.indexOf(b.originalName);
       if (aIndex === -1) return 1;
       if (bIndex === -1) return -1;
       return aIndex - bIndex;

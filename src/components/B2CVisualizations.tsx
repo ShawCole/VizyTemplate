@@ -49,6 +49,12 @@ const VISUALIZATIONS = [
     type: 'bar' as const,
     vertical: true,
     color: '#7C3AED'
+  },
+  {
+    key: 'PERSONAL_STATE' as keyof B2CData,
+    title: 'State Distribution',
+    type: 'bar' as const,
+    color: '#F59E0B'
   }
 ];
 
