@@ -12,6 +12,8 @@ import TopHighlights from './components/sections/TopHighlights';
 import CompanyDetails from './components/sections/CompanyDetails';
 import AudienceDemographics from './components/sections/AudienceDemographics';
 import FinancialDetails from './components/sections/FinancialDetails';
+import USAChoroplethMap from './components/USAChoroplethMap';
+import CreditRating from './components/sections/CreditRating';
 import { B2BData, B2CData } from './types/data';
 import { getAvailableColumns } from './utils/validation';
 import { ChartColorProvider, useChartColors } from './contexts/ChartColorContext';
@@ -270,6 +272,23 @@ function AppContent() {
                   </div>
                 </div>
               )}
+
+              {/* Add the choropleth map and credit rating side by side */}
+              <div className="mt-8 grid grid-cols-2 gap-6">
+                {!isB2BView && b2cFilteredData && (
+                  <CreditRating data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
+                )}
+                {!isB2BView && b2cFilteredData && (
+                  <USAChoroplethMap data={b2cFilteredData} />
+                )}
+                {isB2BView && b2bFilteredData && (
+                  <div className="col-span-2">
+                    <div className="text-center text-gray-500 py-8">
+                      Switch to B2C view to see state distribution
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

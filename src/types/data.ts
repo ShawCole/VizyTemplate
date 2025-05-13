@@ -49,6 +49,7 @@ export interface B2CData extends BaseData {
   ADDITIONAL_PERSONAL_EMAILS: string;
   PERSONAL_EMAIL_VALIDATION_STATUS: string;
   PERSONAL_EMAIL_LAST_SEEN: string;
+  SKIPTRACE_CREDIT_RATING: string;
 }
 
 export type DatasetType = 'b2b' | 'b2c';
