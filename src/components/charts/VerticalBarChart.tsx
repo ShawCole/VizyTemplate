@@ -3,6 +3,7 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useChartColors } from '../../contexts/ChartColorContext';
+import { INCOME_RANGE_LABELS } from '../../utils/dataTransformers';
 
 interface ChartData {
   name: string;
@@ -14,9 +15,10 @@ interface VerticalBarChartProps {
   title: string;
   color: string;
   showUnknowns?: boolean;
+  height?: number;
 }
 
-export function VerticalBarChart({ data, title, color, showUnknowns = false }: VerticalBarChartProps) {
+export function VerticalBarChart({ data, title, color, showUnknowns = false, height = 320 }: VerticalBarChartProps) {
   const { colors } = useChartColors();
   const isFinancialChart = title.includes('Income') || title.includes('Net Worth');
 
@@ -27,6 +29,7 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false }: V
 
   // Get the appropriate color based on the chart type
   const getChartColor = () => {
+    if (color) return color;
     if (title.includes('Income')) return colors.income;
     if (title.includes('Net Worth')) return colors.netWorth;
     if (title.includes('Company Size')) return colors.companySize;
@@ -34,10 +37,48 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false }: V
     return colors.bar;
   };
 
+  // Add a formatter function to directly handle the display of income data
+  const formatAxisTick = (value) => {
+    // Check if this is an income value
+    if (title.includes('Income')) {
+      // First check if we have a direct match in our INCOME_RANGE_LABELS
+      if (INCOME_RANGE_LABELS[value]) {
+        return INCOME_RANGE_LABELS[value];
+      }
+
+      // Special cases for more variations of income ranges
+      if (value.includes('$200,000 to $249')) {
+        return '$200k - $250k';
+      }
+
+      if (value.toLowerCase().includes('less than $20')) {
+        return '< $20k';
+      }
+
+      // For other ranges that might be missing from mapping
+      if (value.includes('$20,000 to $44')) return '$20k - $45k';
+      if (value.includes('$45,000 to $59')) return '$45k - $60k';
+      if (value.includes('$60,000 to $74')) return '$60k - $75k';
+      if (value.includes('$75,000 to $99')) return '$75k - $100k';
+      if (value.includes('$100,000 to $149')) return '$100k - $150k';
+      if (value.includes('$150,000 to $199')) return '$150k - $200k';
+      if (value.includes('$250,000')) return '> $250k';
+    }
+
+    // Handle "$1,000,000 or more" format for any chart
+    if (value.includes('$1,000,000') || value.includes('1 Million') || value.includes('$1M')) {
+      if (value.includes('more') || value.includes('More') || value.includes('>')) {
+        return '$1M+';
+      }
+    }
+
+    return value;
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h3 className="text-[20px] font-semibold text-gray-800 mb-4">{title}</h3>
-      <div className="h-[320px]">
+      <div style={{ height: `${height}px` }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={displayData}
@@ -54,6 +95,7 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false }: V
               textAnchor="end"
               height={60}
               interval={0}
+              tickFormatter={formatAxisTick}
               tick={{
                 fontSize: isFinancialChart || title.includes('Company Size') || title.includes('Company Revenue') ? 13 : 12
               }}

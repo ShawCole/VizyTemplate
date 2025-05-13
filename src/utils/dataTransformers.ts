@@ -35,6 +35,18 @@ const AGE_RANGE_ORDER = [
   '65 and older'
 ];
 
+// Add CREDIT_RATING_ORDER for alphabetical sorting
+const CREDIT_RATING_ORDER = [
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H'
+];
+
 // Add GENDER_ORDER for consistent sorting
 const GENDER_ORDER = [
   'F', // Female
@@ -52,6 +64,7 @@ const STATE_ORDER = [
 
 const INCOME_RANGE_ORDER = [
   'less than $20,000',
+  'Less than $20,000',
   '$20,000 to $44,999',
   '$45,000 to $59,999',
   '$60,000 to $74,999',
@@ -59,6 +72,7 @@ const INCOME_RANGE_ORDER = [
   '$100,000 to $149,999',
   '$150,000 to $199,999',
   '$200,000 to $249,999',
+  '$200,000 to $249,000',
   '$250,000+'
 ];
 
@@ -91,8 +105,9 @@ const REVENUE_LABELS: Record<string, string> = {
   '1 Billion and Over': '> $1B'
 };
 
-const INCOME_RANGE_LABELS: Record<string, string> = {
+export const INCOME_RANGE_LABELS: Record<string, string> = {
   'less than $20,000': '< $20k',
+  'Less than $20,000': '< $20k',
   '$20,000 to $44,999': '$20k - $45k',
   '$45,000 to $59,999': '$45k - $60k',
   '$60,000 to $74,999': '$60k - $75k',
@@ -100,6 +115,7 @@ const INCOME_RANGE_LABELS: Record<string, string> = {
   '$100,000 to $149,999': '$100k - $150k',
   '$150,000 to $199,999': '$150k - $200k',
   '$200,000 to $249,999': '$200k - $250k',
+  '$200,000 to $249,000': '$200k - $250k',
   '$250,000+': '> $250k'
 };
 
@@ -116,7 +132,21 @@ const NET_WORTH_LABELS: Record<string, string> = {
   '$375,000 to $499,999': '$375k - $500k',
   '$500,000 to $749,999': '$500k - $750k',
   '$750,000 to $999,999': '$750k - $1M',
-  'More than $1,000,000': '> $1M'
+  'More than $1,000,000': '> $1M',
+  '$1,000,000 or more': '$1M+',
+  '$1M+': '$1M+'
+};
+
+// Add CREDIT_RATING_LABELS mapping
+const CREDIT_RATING_LABELS: Record<string, string> = {
+  'A': '800+',
+  'B': '750 - 799',
+  'C': '700 - 749',
+  'D': '650 - 699',
+  'E': '600 - 649',
+  'F': '550 - 599',
+  'G': '500 - 549',
+  'H': 'Under 499'
 };
 
 // Add a new mapping for Y/N values
@@ -165,9 +195,25 @@ export function transformData(
   const counts: Record<string, number> = {};
   let unknownCount = 0;
 
+  // Add special debug for INCOME_RANGE to see the actual values
+  if (key === ('INCOME_RANGE' as DataKey)) {
+    console.log("Raw INCOME_RANGE values:", data.map(item => item[key]).filter(Boolean));
+  }
+
   // Special handling for Gender data to ensure 'U' values are combined with other unknowns
   if (key === ('GENDER' as DataKey)) {
     // For Gender, treat 'U' values as unknown values
+    data.forEach(row => {
+      const value = row[key];
+      if (value && value.trim() !== '' && value !== 'U') {
+        counts[value] = (counts[value] || 0) + 1;
+      } else {
+        // Both empty values and 'U' values count as unknown
+        unknownCount++;
+      }
+    });
+  } else if (key === ('SKIPTRACE_CREDIT_RATING' as DataKey)) {
+    // Special handling for Credit Rating to treat 'U' as unknown
     data.forEach(row => {
       const value = row[key];
       if (value && value.trim() !== '' && value !== 'U') {
@@ -182,11 +228,24 @@ export function transformData(
     data.forEach(row => {
       const value = row[key];
       if (value && value.trim() !== '') {
-        counts[value] = (counts[value] || 0) + 1;
+        // Special handling for Income Range to normalize "Less than $20,000" to lowercase
+        if (key === ('INCOME_RANGE' as DataKey) &&
+          typeof value === 'string' &&
+          value.toLowerCase() === 'less than $20,000') {
+          // Always use lowercase version for consistency
+          counts['less than $20,000'] = (counts['less than $20,000'] || 0) + 1;
+        } else {
+          counts[value] = (counts[value] || 0) + 1;
+        }
       } else {
         unknownCount++;
       }
     });
+  }
+
+  // For INCOME_RANGE, also log the counts to see what values were found
+  if (key === ('INCOME_RANGE' as DataKey)) {
+    console.log("INCOME_RANGE counts:", counts);
   }
 
   let transformed = Object.entries(counts)
@@ -196,17 +255,24 @@ export function transformData(
         : key === ('NET_WORTH' as DataKey)
           ? (NET_WORTH_LABELS[name] || name)
           : key === ('INCOME_RANGE' as DataKey)
-            ? (INCOME_RANGE_LABELS[name] || name)
+            ? getIncomeRangeLabel(name)
             : key === ('COMPANY_INDUSTRY' as DataKey)
               ? formatIndustryName(name)
-              : (key === ('MARRIED' as DataKey) || key === ('CHILDREN' as DataKey)) && BOOLEAN_LABELS[key as string]?.[name]
-                ? BOOLEAN_LABELS[key as string][name]
-                : key === ('GENDER' as DataKey) && DISPLAY_NAME_MAPPINGS['GENDER']?.[name]
-                  ? DISPLAY_NAME_MAPPINGS['GENDER'][name]
-                  : name,
+              : key === ('SKIPTRACE_CREDIT_RATING' as DataKey)
+                ? (CREDIT_RATING_LABELS[name] || name)
+                : (key === ('MARRIED' as DataKey) || key === ('CHILDREN' as DataKey)) && BOOLEAN_LABELS[key as string]?.[name]
+                  ? BOOLEAN_LABELS[key as string][name]
+                  : key === ('GENDER' as DataKey) && DISPLAY_NAME_MAPPINGS['GENDER']?.[name]
+                    ? DISPLAY_NAME_MAPPINGS['GENDER'][name]
+                    : name,
       value,
       originalName: name
     }));
+
+  // For INCOME_RANGE, log the transformed data to confirm label mapping
+  if (key === ('INCOME_RANGE' as DataKey)) {
+    console.log("Transformed INCOME_RANGE data:", transformed);
+  }
 
   // Always add Unknown item, but set value to 0 when not showing unknowns
   // This helps keep consistent items for animations
@@ -240,7 +306,39 @@ function sortTransformedData(
   data: Array<{ name: string; value: number; originalName: string }>,
   key: DataKey
 ) {
-  if (key === ('COMPANY_EMPLOYEE_COUNT' as DataKey)) {
+  if (key === ('SKIPTRACE_CREDIT_RATING' as DataKey)) {
+    return data.sort((a, b) => {
+      if (a.originalName === 'Unknown') return 1;
+      if (b.originalName === 'Unknown') return -1;
+      const aIndex = CREDIT_RATING_ORDER.indexOf(a.originalName);
+      const bIndex = CREDIT_RATING_ORDER.indexOf(b.originalName);
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      return aIndex - bIndex;
+    });
+  } else if (key === ('INCOME_RANGE' as DataKey)) {
+    console.log("Sorting Income Range data:", data.map(d => d.originalName));
+    console.log("Income Range Order:", INCOME_RANGE_ORDER);
+
+    const sorted = data.sort((a, b) => {
+      if (a.originalName === 'Unknown') return 1;
+      if (b.originalName === 'Unknown') return -1;
+
+      // Check for both lowercase and capitalized versions
+      if (a.originalName.toLowerCase() === 'less than $20,000') return -1;
+      if (b.originalName.toLowerCase() === 'less than $20,000') return 1;
+
+      const aIndex = INCOME_RANGE_ORDER.indexOf(a.originalName);
+      const bIndex = INCOME_RANGE_ORDER.indexOf(b.originalName);
+
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      return aIndex - bIndex;
+    });
+
+    console.log("Sorted Income Range data:", sorted.map(d => ({ name: d.name, original: d.originalName })));
+    return sorted;
+  } else if (key === ('COMPANY_EMPLOYEE_COUNT' as DataKey)) {
     return data.sort((a, b) => {
       if (a.originalName === 'Unknown') return 1;
       if (b.originalName === 'Unknown') return -1;
@@ -281,17 +379,6 @@ function sortTransformedData(
       if (bIndex === -1) return -1;
       return aIndex - bIndex;
     });
-  } else if (key === ('INCOME_RANGE' as DataKey)) {
-    return data.sort((a, b) => {
-      if (a.originalName === 'Unknown') return 1;
-      if (b.originalName === 'Unknown') return -1;
-      // Use the original data values for sorting, not the display labels
-      const aIndex = INCOME_RANGE_ORDER.indexOf(a.originalName);
-      const bIndex = INCOME_RANGE_ORDER.indexOf(b.originalName);
-      if (aIndex === -1) return 1;
-      if (bIndex === -1) return -1;
-      return aIndex - bIndex;
-    });
   } else if (key === ('NET_WORTH' as DataKey)) {
     return data.sort((a, b) => {
       if (a.originalName === 'Unknown') return 1;
@@ -319,4 +406,48 @@ function sortTransformedData(
       return b.value - a.value;
     });
   }
+}
+
+// Helper function to get the correct income range label regardless of capitalization
+function getIncomeRangeLabel(name: string): string {
+  // First check exact match
+  if (INCOME_RANGE_LABELS[name]) {
+    return INCOME_RANGE_LABELS[name];
+  }
+
+  // Check case-insensitive match
+  const lowerName = name.toLowerCase();
+  if (lowerName === 'less than $20,000') {
+    return '< $20k';
+  }
+
+  // Special case for "$1,000,000 or more" format
+  if (lowerName.includes('$1,000,000') || lowerName.includes('1 million')) {
+    if (lowerName.includes('more') || lowerName.includes('over')) {
+      return '$1M+';
+    }
+  }
+
+  // For other ranges, try to find a matching key
+  for (const key of Object.keys(INCOME_RANGE_LABELS)) {
+    if (key.toLowerCase() === lowerName) {
+      return INCOME_RANGE_LABELS[key];
+    }
+  }
+
+  // Add partial matching for special cases
+  if (name.includes('$200,000 to $249')) {
+    return '$200k - $250k';
+  }
+
+  if (name.includes('$20,000 to $44')) return '$20k - $45k';
+  if (name.includes('$45,000 to $59')) return '$45k - $60k';
+  if (name.includes('$60,000 to $74')) return '$60k - $75k';
+  if (name.includes('$75,000 to $99')) return '$75k - $100k';
+  if (name.includes('$100,000 to $149')) return '$100k - $150k';
+  if (name.includes('$150,000 to $199')) return '$150k - $200k';
+  if (name.includes('$250,000')) return '> $250k';
+
+  // If no match, return original name
+  return name;
 }
