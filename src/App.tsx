@@ -18,6 +18,7 @@ import { B2BData, B2CData } from './types/data';
 import { getAvailableColumns } from './utils/validation';
 import { ChartColorProvider, useChartColors } from './contexts/ChartColorContext';
 import ViewToggle from './components/ViewToggle';
+import ControlPanel from './components/ControlPanel';
 
 interface DataState {
   data: B2BData[] | B2CData[] | null;
@@ -128,32 +129,16 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      <div className="fixed top-4 right-4 flex flex-col gap-4">
-        <ViewToggle
-          isB2BView={isB2BView}
-          onViewChange={handleViewChange}
-        />
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold text-gray-800">Logo Size</h3>
-            <div className="min-h-[32px]">
-              <LogoSizeControl size={logoSize} onSizeChange={setLogoSize} />
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold text-gray-800">Secondary Logo Size</h3>
-            <div className="min-h-[32px]">
-              <LogoSizeControl size={secondaryLogoSize} onSizeChange={setSecondaryLogoSize} />
-            </div>
-          </div>
-        </div>
-        <ChartColorControls
-          colors={colors}
-          onColorChange={updateColor}
-        />
-      </div>
+      <ControlPanel
+        isB2BView={isB2BView}
+        onViewChange={handleViewChange}
+        logoSize={logoSize}
+        setLogoSize={setLogoSize}
+        secondaryLogoSize={secondaryLogoSize}
+        setSecondaryLogoSize={setSecondaryLogoSize}
+        colors={colors}
+        updateColor={updateColor}
+      />
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-12">
           {showUploadSection && (
