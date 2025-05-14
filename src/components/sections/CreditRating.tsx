@@ -1,4 +1,3 @@
-import React from 'react';
 import { VerticalBarChart } from '../charts/VerticalBarChart';
 import { B2CData } from '../../types/data';
 import { transformData } from '../../utils/dataTransformers';
