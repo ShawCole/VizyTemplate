@@ -261,6 +261,11 @@ function AppContent() {
                     <TopHighlights data={b2bFilteredData} showUnknowns={showB2BUnknowns} />
                     <CompanyDetails data={b2bFilteredData} showUnknowns={showB2BUnknowns} />
                   </div>
+                  <div className="col-span-2">
+                    <div className="text-center text-gray-500 py-8">
+                      Switch to B2C view to see state distribution
+                    </div>
+                  </div>
                 </div>
               )}
               {!isB2BView && b2cFilteredData && (
@@ -270,25 +275,12 @@ function AppContent() {
                     <AudienceDemographics data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
                     <FinancialDetails data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
                   </div>
+                  <div className="mt-8 grid grid-cols-2 gap-6">
+                    <CreditRating data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
+                    <USAChoroplethMap data={b2cFilteredData} />
+                  </div>
                 </div>
               )}
-
-              {/* Add the choropleth map and credit rating side by side */}
-              <div className="mt-8 grid grid-cols-2 gap-6">
-                {!isB2BView && b2cFilteredData && (
-                  <CreditRating data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
-                )}
-                {!isB2BView && b2cFilteredData && (
-                  <USAChoroplethMap data={b2cFilteredData} />
-                )}
-                {isB2BView && b2bFilteredData && (
-                  <div className="col-span-2">
-                    <div className="text-center text-gray-500 py-8">
-                      Switch to B2C view to see state distribution
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         )}
