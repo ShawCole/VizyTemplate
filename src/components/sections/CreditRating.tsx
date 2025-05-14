@@ -23,7 +23,7 @@ export default function CreditRating({ data, showUnknowns }: CreditRatingProps) 
                 title={CREDIT_CHART.title}
                 color={colors.primaryColor3}
                 showUnknowns={showUnknowns}
-                height={370} /* Adjusted chart height to match map exactly */
+                height={400} /* Increased height from 370 to 400 */
             />
         </div>
     );

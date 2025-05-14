@@ -287,15 +287,15 @@ const USAChoroplethMap = ({ data }: USAChoroplethMapProps) => {
     return (
         <Card className="w-full h-full">
             <CardHeader>
-                <CardTitle>State Distribution</CardTitle>
+                <CardTitle className="text-[20px]">State Distribution</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-0">
                 {mapLoading ? (
                     <div className="flex items-center justify-center h-64">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                     </div>
                 ) : (
-                    <div className="relative">
+                    <div className="relative py-0 -mt-16 -mb-9">
                         <div className="w-full aspect-[4/3]">
                             <ComposableMap projection="geoAlbersUsa">
                                 <Geographies geography={currentGeoUrl}>
