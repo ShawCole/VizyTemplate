@@ -4,9 +4,7 @@ import FileUpload from './components/FileUpload';
 import DataFilter from './components/DataFilter';
 import FileInfo from './components/FileInfo';
 import FilterNotes from './components/FilterNotes';
-import LogoSizeControl from './components/LogoSizeControl';
 import LogoUpload from './components/LogoUpload';
-import ChartColorControls from './components/ChartColorControls';
 import ContactData from './components/sections/ContactData';
 import TopHighlights from './components/sections/TopHighlights';
 import CompanyDetails from './components/sections/CompanyDetails';
@@ -17,7 +15,6 @@ import CreditRating from './components/sections/CreditRating';
 import { B2BData, B2CData } from './types/data';
 import { getAvailableColumns } from './utils/validation';
 import { ChartColorProvider, useChartColors } from './contexts/ChartColorContext';
-import ViewToggle from './components/ViewToggle';
 import ControlPanel from './components/ControlPanel';
 
 interface DataState {
