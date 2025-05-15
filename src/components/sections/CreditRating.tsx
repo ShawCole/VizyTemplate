@@ -2,6 +2,7 @@ import { VerticalBarChart } from '../charts/VerticalBarChart';
 import { B2CData } from '../../types/data';
 import { transformData } from '../../utils/dataTransformers';
 import { useChartColors } from '../../contexts/ChartColorContext';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 interface CreditRatingProps {
     data: B2CData[];
@@ -17,14 +18,21 @@ export default function CreditRating({ data, showUnknowns }: CreditRatingProps) 
     const { colors } = useChartColors();
 
     return (
-        <div>
-            <VerticalBarChart
-                data={transformData(data, CREDIT_CHART.key, undefined, showUnknowns)}
-                title={CREDIT_CHART.title}
-                color={colors.primaryColor3}
-                showUnknowns={showUnknowns}
-                height={400} /* Increased height from 370 to 400 */
-            />
-        </div>
+        <Card className="w-full h-full flex flex-col">
+            <CardHeader className="flex-none">
+                <CardTitle className="text-[20px]">{CREDIT_CHART.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 p-0">
+                <div className="h-full">
+                    <VerticalBarChart
+                        data={transformData(data, CREDIT_CHART.key, undefined, showUnknowns)}
+                        title=""
+                        color={colors.primaryColor3}
+                        showUnknowns={showUnknowns}
+                        height={350}
+                    />
+                </div>
+            </CardContent>
+        </Card>
     );
 } 
