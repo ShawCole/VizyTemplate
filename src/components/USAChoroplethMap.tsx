@@ -350,15 +350,20 @@ const USAChoroplethMap = ({ data }: USAChoroplethMapProps) => {
                         {tooltip.show && (
                             <div
                                 style={{
-                                    position: 'absolute',
+                                    position: 'fixed',
                                     left: `${tooltip.x}px`,
                                     top: `${tooltip.y}px`,
                                     transform: 'translate(-50%, -100%)',
-                                    backgroundColor: 'white',
-                                    padding: '8px',
-                                    borderRadius: '4px',
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                    padding: '8px 12px',
+                                    borderRadius: '6px',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                                     zIndex: 1000,
+                                    fontSize: '14px',
+                                    fontWeight: 500,
+                                    color: '#374151',
+                                    border: '1px solid rgba(0,0,0,0.1)',
+                                    pointerEvents: 'none'
                                 }}
                             >
                                 {tooltip.content}
