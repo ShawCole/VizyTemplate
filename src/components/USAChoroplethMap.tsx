@@ -285,19 +285,19 @@ const USAChoroplethMap = ({ data }: USAChoroplethMapProps) => {
     };
 
     return (
-        <Card className="w-full h-full">
-            <CardHeader>
+        <Card className="w-full h-full flex flex-col border shadow-sm max-h-[500px] lg:max-h-none">
+            <CardHeader className="flex-none lg:p-4 xl:p-6">
                 <CardTitle className="text-[20px]">State Distribution</CardTitle>
             </CardHeader>
-            <CardContent className="pb-0">
+            <CardContent className="pb-0 flex-1 flex flex-col -mt-[60px] -mb-[24px] lg:mt-0 lg:-mb-[80px] lg:px-4 xl:-mb-[60px] xl:px-6 2xl:-mb-[88px]">
                 {mapLoading ? (
-                    <div className="flex items-center justify-center h-64">
+                    <div className="flex items-center justify-center h-64 flex-1">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                     </div>
                 ) : (
-                    <div className="relative py-0 -mt-16 -mb-9">
+                    <div className="relative flex-1 flex items-center justify-center lg:min-h-[250px] xl:min-h-[280px]">
                         <div className="w-full aspect-[4/3]">
-                            <ComposableMap projection="geoAlbersUsa">
+                            <ComposableMap projection="geoAlbersUsa" className="lg:-translate-y-[50px] xl:-translate-y-[60px]">
                                 <Geographies geography={currentGeoUrl}>
                                     {({ geographies }) =>
                                         geographies.map(geo => {

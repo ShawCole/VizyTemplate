@@ -257,7 +257,7 @@ function AppContent() {
                     <AudienceDemographics data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
                     <FinancialDetails data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
                   </div>
-                  <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-[392px] lg:items-stretch xl:h-[444px] xl:items-stretch 2xl:h-[500px]">
                     <CreditRating data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
                     <USAChoroplethMap data={b2cFilteredData} />
                   </div>

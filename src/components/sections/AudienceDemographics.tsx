@@ -55,6 +55,7 @@ export default function AudienceDemographics({ data, showUnknowns }: AudienceDem
             title={chart.title}
             isSemi={true}
             showUnknowns={showUnknowns}
+            tooltipOnly={true}
           />
         )
       ))}

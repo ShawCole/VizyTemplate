@@ -25,7 +25,7 @@ const FINANCIAL_CHARTS = [
 
 export default function FinancialDetails({ data, showUnknowns }: FinancialDetailsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:h-[392px] lg:items-stretch xl:h-[414px] xl:items-stretch 2xl:h-[500px]">
       {FINANCIAL_CHARTS.map(chart => (
         <VerticalBarChart
           key={chart.key}

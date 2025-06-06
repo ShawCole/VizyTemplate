@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useChartColors } from '../../contexts/ChartColorContext';
 import { INCOME_RANGE_LABELS } from '../../utils/dataTransformers';
@@ -16,16 +16,48 @@ interface VerticalBarChartProps {
   color: string;
   showUnknowns?: boolean;
   height?: number;
+  noWrapper?: boolean;
 }
 
-export function VerticalBarChart({ data, title, color, showUnknowns = false, height = 320 }: VerticalBarChartProps) {
+export function VerticalBarChart({ data, title, color, showUnknowns = false, height = 320, noWrapper = false }: VerticalBarChartProps) {
   const { colors } = useChartColors();
   const isFinancialChart = title.includes('Income') || title.includes('Net Worth');
+  const [screenWidth, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1280);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Filter out Unknown data when showUnknowns is false
   const displayData = showUnknowns
     ? data
     : data.filter(item => item.name !== 'Unknown');
+
+  // Responsive margins based on screen size
+  const getResponsiveMargins = () => {
+    if (screenWidth >= 1280) {
+      // xl+ screens: normal margins
+      return {
+        left: 20,
+        right: 20,
+        top: 20,
+        bottom: 25
+      };
+    } else {
+      // lg screens: reduced margins for more chart space
+      return {
+        left: 12,
+        right: 12,
+        top: 20,
+        bottom: 25
+      };
+    }
+  };
 
   // Get the appropriate color based on the chart type
   const getChartColor = () => {
@@ -75,19 +107,14 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
     return value;
   };
 
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-[20px] font-semibold text-gray-800 mb-4">{title}</h3>
-      <div style={{ height: `${height}px` }}>
+  const chartContent = (
+    <>
+      {title && !noWrapper && <h3 className="text-[20px] font-semibold text-gray-800 lg:mb-2 xl:mb-4 2xl:mb-3">{title}</h3>}
+      <div className="flex-1 lg:min-h-[250px] xl:min-h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={displayData}
-            margin={{
-              left: 20,
-              right: 20,
-              top: 20,
-              bottom: 25
-            }}
+            margin={getResponsiveMargins()}
           >
             <XAxis
               dataKey="name"
@@ -97,13 +124,13 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
               interval={0}
               tickFormatter={formatAxisTick}
               tick={{
-                fontSize: isFinancialChart || title.includes('Company Size') || title.includes('Company Revenue') ? 13 : 12
+                fontSize: isFinancialChart || title.includes('Company Size') || title.includes('Company Revenue') || title.includes('Credit Rating') ? 13 : 12
               }}
               tickMargin={4}
             />
             <YAxis
               tick={{
-                fontSize: isFinancialChart || title.includes('Company Size') || title.includes('Company Revenue') ? 16 : 11
+                fontSize: isFinancialChart || title.includes('Company Size') || title.includes('Company Revenue') || title.includes('Credit Rating') ? 16 : 11
               }}
             />
             <Tooltip />
@@ -120,6 +147,16 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
           </BarChart>
         </ResponsiveContainer>
       </div>
+    </>
+  );
+
+  if (noWrapper) {
+    return <>{chartContent}</>;
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow-md lg:p-4 xl:p-6 flex flex-col h-full">
+      {chartContent}
     </div>
   );
 }
