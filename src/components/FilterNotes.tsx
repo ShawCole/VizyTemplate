@@ -52,10 +52,17 @@ export default function FilterNotes({ initialTitle = "Edit Title" }: FilterNotes
   };
 
   const addKeywords = (input: string) => {
-    const newKeywords = input
-      .split(',')
+    const tokens = input
+      .split(/[,;|\n\r\t]+/)
       .map(k => k.trim())
-      .filter(k => k && !keywords.includes(k));
+      .filter(k => k.length > 0);
+
+    if (tokens.length === 0) {
+      return;
+    }
+
+    const existingLower = new Set(keywords.map(k => k.toLowerCase()));
+    const newKeywords = tokens.filter(k => !existingLower.has(k.toLowerCase()));
 
     if (newKeywords.length > 0) {
       setKeywords([...keywords, ...newKeywords]);
@@ -146,7 +153,7 @@ export default function FilterNotes({ initialTitle = "Edit Title" }: FilterNotes
                   onKeyDown={handleKeywordInputKeyDown}
                   onBlur={handleKeywordInputBlur}
                   className="w-64 px-3 py-1.5 text-sm border border-gray-200 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-                  placeholder="Type keywords, separate with commas"
+                  placeholder="Type keywords, separate with commas or newlines"
                 />
               )}
             </div>
