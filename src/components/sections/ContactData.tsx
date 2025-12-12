@@ -9,8 +9,6 @@ import {
   countTokensAcrossRowsForKeys,
   isLikelyEmail,
   normalizeEmail,
-  isSha256Hex,
-  normalizeHex,
   normalizePhoneDigits,
   isLikelyPhone,
 } from '../../utils/tokenizers';
@@ -38,14 +36,20 @@ export default function ContactData({ data }: ContactDataProps) {
     }
   );
 
-  // BUSINESS_EMAIL is single email per row; count valid non-empty cells only
-  const businessEmailCount = data.filter(
-    (d) => typeof d.BUSINESS_EMAIL === 'string' && d.BUSINESS_EMAIL.trim() !== '' && isLikelyEmail(d.BUSINESS_EMAIL)
-  ).length;
+  const businessEmailCount = countTokensAcrossRows(data, 'BUSINESS_EMAIL', {
+    normalize: normalizeEmail,
+    validator: isLikelyEmail,
+  });
 
-  const sha256EmailCount = countTokensAcrossRows(data, 'SHA256_PERSONAL_EMAIL', {
-    normalize: normalizeHex,
-    validator: isSha256Hex,
+  // Verified Emails (comma-delimited columns)
+  const personalVerifiedEmailCount = countTokensAcrossRows(data, 'PERSONAL_VERIFIED_EMAILS', {
+    normalize: normalizeEmail,
+    validator: isLikelyEmail,
+  });
+
+  const businessVerifiedEmailCount = countTokensAcrossRows(data, 'BUSINESS_VERIFIED_EMAILS', {
+    normalize: normalizeEmail,
+    validator: isLikelyEmail,
   });
 
   // Phones
@@ -64,12 +68,31 @@ export default function ContactData({ data }: ContactDataProps) {
     validator: isLikelyPhone,
   });
 
+  // Skiptrace B2B Phone (single value per cell)
+  const skiptraceB2BPhoneCount = data.filter(
+    (d) => typeof d.SKIPTRACE_B2B_PHONE === 'string' && d.SKIPTRACE_B2B_PHONE.trim() !== ''
+  ).length;
+
+  // Social profile URLs
+  const facebookUrlCount = data.filter(
+    (d) => d.FACEBOOK_URL && d.FACEBOOK_URL.trim() !== ''
+  ).length;
+
+  const twitterUrlCount = data.filter(
+    (d) => d.TWITTER_URL && d.TWITTER_URL.trim() !== ''
+  ).length;
+
   const homeownerYesCount = data.filter((d) => d.HOMEOWNER === 'Y').length;
-  const personalAddressCount = data.filter(
-    (d) => typeof d.PERSONAL_ADDRESS === 'string' && d.PERSONAL_ADDRESS.trim() !== ''
+  const businessAddressCount = data.filter(
+    (d) => typeof d.SKIPTRACE_B2B_ADDRESS === 'string' && d.SKIPTRACE_B2B_ADDRESS.trim() !== ''
   ).length;
   const personalCityCount = data.filter(
-    (d) => typeof d.PERSONAL_CITY === 'string' && d.PERSONAL_CITY.trim() !== ''
+    (d) => typeof d.SKIPTRACE_CITY === 'string' && d.SKIPTRACE_CITY.trim() !== ''
+  ).length;
+
+  // Skiptrace Address
+  const skiptraceAddressCount = data.filter(
+    (d) => d.SKIPTRACE_ADDRESS && d.SKIPTRACE_ADDRESS.trim() !== ''
   ).length;
 
   const stats = [
@@ -79,6 +102,7 @@ export default function ContactData({ data }: ContactDataProps) {
         { label: 'Mobile', value: mobilePhoneCount },
         { label: 'Direct', value: directPhoneCount },
         { label: 'Skiptrace', value: skiptraceWirelessCount },
+        { label: 'Skiptrace B2B', value: skiptraceB2BPhoneCount },
       ],
       icon: Phone,
     },
@@ -86,31 +110,35 @@ export default function ContactData({ data }: ContactDataProps) {
       title: 'Emails',
       items: [
         { label: 'Personal', value: personalEmailCount },
+        { label: 'Personal Verified', value: personalVerifiedEmailCount },
         { label: 'Business', value: businessEmailCount },
-        { label: 'SHA256', value: sha256EmailCount },
+        { label: 'Business Verified', value: businessVerifiedEmailCount },
       ],
       icon: Mail,
     },
     {
-      title: 'LinkedIn Profiles',
+      title: 'Social Profiles',
       items: [
         {
-          label: 'Personal',
+          label: 'Personal LinkedIn',
           value: data.filter((d) => d.LINKEDIN_URL && d.LINKEDIN_URL.trim() !== '').length,
         },
         {
-          label: 'Company',
+          label: 'Company LinkedIn',
           value: data.filter((d) => d.COMPANY_LINKEDIN_URL && d.COMPANY_LINKEDIN_URL.trim() !== '').length,
         },
+        { label: 'Facebook URL', value: facebookUrlCount },
+        { label: 'Twitter URL', value: twitterUrlCount },
       ],
       icon: Linkedin,
     },
     {
       title: 'Location',
       items: [
+        { label: 'Personal Address', value: skiptraceAddressCount },
+        { label: 'Personal City', value: personalCityCount },
+        { label: 'Business Address', value: businessAddressCount },
         { label: 'Homeowners', value: homeownerYesCount },
-        { label: 'Address', value: personalAddressCount },
-        { label: 'City', value: personalCityCount },
       ],
       icon: Home,
     },

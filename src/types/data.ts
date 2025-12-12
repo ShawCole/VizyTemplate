@@ -15,6 +15,14 @@ export interface BaseData {
   LINKEDIN_URL: string;
   HOMEOWNER: string;
   SHA256_PERSONAL_EMAIL: string;
+  SKIPTRACE_B2B_PHONE: string;
+  PERSONAL_VERIFIED_EMAILS: string;
+  BUSINESS_VERIFIED_EMAILS: string;
+  FACEBOOK_URL: string;
+  TWITTER_URL: string;
+  SKIPTRACE_ADDRESS: string;
+  SKIPTRACE_B2B_ADDRESS: string;
+  SKIPTRACE_CITY: string;
 }
 
 export interface B2BData extends BaseData {
