@@ -358,7 +358,7 @@ const USAChoroplethMap = ({ data, defaultMode = 'people', onStateClick, selected
                                             const stateCode = getStateCodeFromGeo(geo);
                                             const stateData = stateCounts.find(d => d.id === stateCode);
                                             const baseColor = stateData ? colorScale(stateData.value) : "#EEE";
-                                            
+
                                             // Dim non-selected states when there are selections
                                             const hasSelections = selectedStates && selectedStates.size > 0;
                                             const isSelected = selectedStates?.has(stateCode || '');
