@@ -35,6 +35,11 @@ const AGE_RANGE_ORDER = [
   '65 and older'
 ];
 
+// Age range label mapping
+const AGE_RANGE_LABELS: Record<string, string> = {
+  '65 and older': '65+'
+};
+
 // Add CREDIT_RATING_ORDER for alphabetical sorting
 const CREDIT_RATING_ORDER = [
   'H',  // Under 499
@@ -260,11 +265,13 @@ export function transformData(
               ? formatIndustryName(name)
               : key === ('SKIPTRACE_CREDIT_RATING' as DataKey)
                 ? (CREDIT_RATING_LABELS[name] || name)
-                : (key === ('MARRIED' as DataKey) || key === ('CHILDREN' as DataKey)) && BOOLEAN_LABELS[key as string]?.[name]
-                  ? BOOLEAN_LABELS[key as string][name]
-                  : key === ('GENDER' as DataKey) && DISPLAY_NAME_MAPPINGS['GENDER']?.[name]
-                    ? DISPLAY_NAME_MAPPINGS['GENDER'][name]
-                    : name,
+                : key === ('AGE_RANGE' as DataKey)
+                  ? (AGE_RANGE_LABELS[name] || name)
+                  : (key === ('MARRIED' as DataKey) || key === ('CHILDREN' as DataKey)) && BOOLEAN_LABELS[key as string]?.[name]
+                    ? BOOLEAN_LABELS[key as string][name]
+                    : key === ('GENDER' as DataKey) && DISPLAY_NAME_MAPPINGS['GENDER']?.[name]
+                      ? DISPLAY_NAME_MAPPINGS['GENDER'][name]
+                      : name,
       value,
       originalName: name
     }));
