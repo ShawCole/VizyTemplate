@@ -6,7 +6,7 @@ import {
 } from "react-simple-maps";
 import { scaleQuantile } from "d3-scale";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { B2CData } from "../types/data";
+import { B2BData, B2CData } from "../types/data";
 import { useChartColors } from "../contexts/ChartColorContext";
 
 // USA GeoJSON
@@ -56,14 +56,16 @@ const ADDITIONAL_REGIONS: Record<string, string> = {
 };
 
 interface USAChoroplethMapProps {
-    data: B2CData[];
+    data: (B2BData | B2CData)[];
+    defaultMode?: 'people' | 'companies';
 }
 
-const USAChoroplethMap = ({ data }: USAChoroplethMapProps) => {
+const USAChoroplethMap = ({ data, defaultMode = 'people' }: USAChoroplethMapProps) => {
     const { colors } = useChartColors();
     const [tooltip, setTooltip] = useState({ show: false, content: "", x: 0, y: 0 });
     const [mapLoading, setMapLoading] = useState(true);
     const [currentGeoUrl, setCurrentGeoUrl] = useState(geoUrl);
+    const [mode, setMode] = useState<'people' | 'companies'>(defaultMode);
 
     // Effect to check if the map loads correctly
     useEffect(() => {
@@ -183,17 +185,13 @@ const USAChoroplethMap = ({ data }: USAChoroplethMapProps) => {
         };
     }, []);
 
-    // Calculate state counts from the data
-    const stateCounts = useMemo(() => {
-        // Initialize counts for all states to zero
+    // Calculate people state counts from PERSONAL_STATE
+    const peopleCounts = useMemo(() => {
         const counts: Record<string, number> = {};
         Object.keys(STATE_NAMES).forEach(state => {
             counts[state] = 0;
         });
 
-        console.log("Processing data of length:", data?.length);
-
-        // Count occurrences of each state
         if (data && data.length > 0) {
             data.forEach(item => {
                 if (item.PERSONAL_STATE && item.PERSONAL_STATE.trim() !== '') {
@@ -205,20 +203,52 @@ const USAChoroplethMap = ({ data }: USAChoroplethMapProps) => {
             });
         }
 
-        // Convert to array format for the map
-        const result = Object.keys(STATE_NAMES).map(id => {
-            return {
-                id,
-                state: STATE_NAMES[id],
-                value: counts[id] || 0
-            };
+        return Object.keys(STATE_NAMES).map(id => ({
+            id,
+            state: STATE_NAMES[id],
+            value: counts[id] || 0
+        }));
+    }, [data, normalizeStateCode]);
+
+    // Calculate company state counts from COMPANY_STATE, deduplicated by COMPANY_DOMAIN
+    const companyCounts = useMemo(() => {
+        const counts: Record<string, number> = {};
+        Object.keys(STATE_NAMES).forEach(state => {
+            counts[state] = 0;
         });
 
-        console.log("All state counts:", counts);
-        console.log("Result array:", result);
+        // Track seen domains to deduplicate
+        const seenDomains = new Set<string>();
 
-        return result;
+        if (data && data.length > 0) {
+            data.forEach(item => {
+                const b2bItem = item as B2BData;
+                const domain = b2bItem.COMPANY_DOMAIN?.trim().toLowerCase();
+                const state = b2bItem.COMPANY_STATE;
+
+                // Skip if no domain, empty domain, or already counted this domain
+                if (!domain || domain === '' || seenDomains.has(domain)) return;
+
+                seenDomains.add(domain);
+
+                if (state && state.trim() !== '') {
+                    const stateCode = normalizeStateCode(state);
+                    if (stateCode && counts[stateCode] !== undefined) {
+                        counts[stateCode]++;
+                    }
+                }
+            });
+        }
+
+        return Object.keys(STATE_NAMES).map(id => ({
+            id,
+            state: STATE_NAMES[id],
+            value: counts[id] || 0
+        }));
     }, [data, normalizeStateCode]);
+
+    // Select active dataset based on mode
+    const stateCounts = mode === 'companies' ? companyCounts : peopleCounts;
 
     // Create color scale
     const colorScale = useMemo(() => {
@@ -286,8 +316,30 @@ const USAChoroplethMap = ({ data }: USAChoroplethMapProps) => {
 
     return (
         <Card className="w-full h-full flex flex-col border shadow-sm max-h-[500px] lg:max-h-none">
-            <CardHeader className="flex-none lg:p-4 xl:p-6">
+            <CardHeader className="flex-none lg:p-4 xl:p-6 relative">
                 <CardTitle className="text-[20px]">State Distribution</CardTitle>
+                <div className="absolute top-2.5 right-4">
+                    <div className="flex bg-gray-200 rounded-full p-0.5 text-sm">
+                        <button
+                            onClick={() => setMode('people')}
+                            className={`px-3 py-0.5 rounded-full transition-all ${mode === 'people'
+                                ? 'bg-white text-gray-800 shadow-sm font-medium'
+                                : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            People
+                        </button>
+                        <button
+                            onClick={() => setMode('companies')}
+                            className={`px-3 py-0.5 rounded-full transition-all ${mode === 'companies'
+                                ? 'bg-white text-gray-800 shadow-sm font-medium'
+                                : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Companies
+                        </button>
+                    </div>
+                </div>
             </CardHeader>
             <CardContent className="pb-0 flex-1 flex flex-col -mt-[60px] -mb-[24px] lg:mt-0 lg:-mb-[80px] lg:px-4 xl:-mb-[60px] xl:px-6 2xl:-mb-[88px]">
                 {mapLoading ? (
