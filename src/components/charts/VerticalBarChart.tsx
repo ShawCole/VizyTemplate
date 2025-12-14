@@ -48,12 +48,20 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
         top: 20,
         bottom: 25
       };
-    } else {
+    } else if (screenWidth >= 1024) {
       // lg screens: reduced margins for more chart space
       return {
         left: 12,
         right: 12,
         top: 20,
+        bottom: 25
+      };
+    } else {
+      // Mobile screens: minimal left margin
+      return {
+        left: -4,
+        right: 8,
+        top: 16,
         bottom: 25
       };
     }
@@ -109,8 +117,8 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
 
   const chartContent = (
     <>
-      {title && !noWrapper && <h3 className="text-[20px] font-semibold text-gray-800 lg:mb-2 xl:mb-4 2xl:mb-3">{title}</h3>}
-      <div className="flex-1 lg:min-h-[250px] xl:min-h-[280px]">
+      {title && !noWrapper && <h3 className="text-[20px] font-semibold text-gray-800 mb-4 lg:mb-2 xl:mb-4 2xl:mb-3">{title}</h3>}
+      <div className="flex-1 min-h-[280px] lg:min-h-[250px] xl:min-h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={displayData}
@@ -155,7 +163,7 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md lg:p-4 xl:p-6 flex flex-col h-full">
+    <div className="bg-white rounded-lg shadow-md pt-6 pr-6 pb-6 pl-3 lg:p-4 xl:p-6 flex flex-col h-full">
       {chartContent}
     </div>
   );

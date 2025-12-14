@@ -146,7 +146,7 @@ export function DoughnutChart({
       <h3 className="text-[20px] font-semibold text-gray-800 mb-0">
         {title}
       </h3>
-      <div className="h-[350px] -mt-[36px] relative">
+      <div className="h-[280px] sm:h-[320px] md:h-[350px] -mt-[36px] relative">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart margin={{ top: -75, bottom: -75 }}>
             <Pie
