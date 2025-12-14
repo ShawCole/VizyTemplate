@@ -57,10 +57,10 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
         bottom: 25
       };
     } else {
-      // Mobile screens: minimal left margin
+      // Mobile screens: minimal margins
       return {
         left: -4,
-        right: 8,
+        right: 0,
         top: 16,
         bottom: 25
       };
@@ -163,7 +163,7 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md pt-6 pr-6 pb-6 pl-3 lg:p-4 xl:p-6 flex flex-col h-full">
+    <div className="bg-white rounded-lg shadow-md pt-6 pr-3 pb-6 pl-3 lg:p-4 xl:p-6 flex flex-col h-full">
       {chartContent}
     </div>
   );
