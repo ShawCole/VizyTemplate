@@ -235,7 +235,7 @@ export default function DataFilter({
       onStateFilterChange(newSet);
       return;
     }
-    
+
     // Other filters: update local state
     setSelectedSubFilters(prev => {
       const newState = { ...prev };
@@ -287,13 +287,13 @@ export default function DataFilter({
   const handleSelectAll = (column: string) => {
     const values = getUniqueValues(column);
     const newSet = new Set(values);
-    
+
     // STATE filter: update via parent callback only
     if (column === 'STATE' && onStateFilterChange) {
       onStateFilterChange(newSet);
       return;
     }
-    
+
     setSelectedSubFilters(prev => ({
       ...prev,
       [column]: newSet
@@ -306,7 +306,7 @@ export default function DataFilter({
       onStateFilterChange(new Set());
       return;
     }
-    
+
     setSelectedSubFilters(prev => {
       const newState = { ...prev };
       delete newState[column];
@@ -322,7 +322,7 @@ export default function DataFilter({
           return false;
         }
       }
-      
+
       // Check other filters from local selectedSubFilters
       return Object.entries(selectedSubFilters).every(([column, values]) => {
         // Skip STATE - handled above via externalStateFilter
