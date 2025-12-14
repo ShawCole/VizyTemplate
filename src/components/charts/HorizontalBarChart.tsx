@@ -107,7 +107,12 @@ export function HorizontalBarChart({
       return "Financial\nServices";
     }
     if ((isIndustriesChart || isJobTitlesChart) && (name.includes("Administration") || name.includes("Administrative"))) {
-      return name.replace(/Administration|Administrative/, "Admin");
+      let result = name.replace(/Administration|Administrative/, "Admin");
+      // Further shorten "Government Admin" to "Gov. Admin."
+      if (result === "Government Admin") {
+        return "Gov. Admin.";
+      }
+      return result;
     }
     return name;
   };
