@@ -19,7 +19,7 @@ export function StatCard({ title, items, icon: Icon }: StatCardProps) {
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex items-center gap-3 mb-4">
         <Icon className="w-5 h-5 text-blue-500" />
-        <h3 className="text-[20px] font-semibold text-gray-800">{title}</h3>
+        <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
       </div>
       <div className="space-y-2">
         {items.map((item, index) => (

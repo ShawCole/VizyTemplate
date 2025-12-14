@@ -117,7 +117,7 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
 
   const chartContent = (
     <>
-      {title && !noWrapper && <h3 className="text-[20px] font-semibold text-gray-800 mb-4 lg:mb-2 xl:mb-4 2xl:mb-3">{title}</h3>}
+      {title && !noWrapper && <h3 className="text-xl font-semibold text-gray-800 mb-4">{title}</h3>}
       <div className="flex-1 min-h-[280px] lg:min-h-[250px] xl:min-h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -163,7 +163,7 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md pt-6 pr-3 pb-6 pl-3 lg:p-4 xl:p-6 flex flex-col h-full">
+    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col h-full">
       {chartContent}
     </div>
   );

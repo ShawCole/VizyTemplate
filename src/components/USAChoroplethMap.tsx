@@ -318,8 +318,8 @@ const USAChoroplethMap = ({ data, defaultMode = 'people', onStateClick, selected
 
     return (
         <Card className="w-full h-full flex flex-col border shadow-sm max-h-[500px] lg:max-h-none">
-            <CardHeader className="flex-none lg:p-4 xl:p-6 relative">
-                <CardTitle className="text-[20px]">State Distribution</CardTitle>
+            <CardHeader className="flex-none p-6 relative">
+                <CardTitle className="text-xl leading-normal">State Distribution</CardTitle>
                 <div className="absolute top-2.5 right-4 z-10">
                     <div className="flex bg-gray-200 rounded-full p-0.5 text-sm">
                         <button
