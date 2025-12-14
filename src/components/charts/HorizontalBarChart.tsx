@@ -96,6 +96,9 @@ export function HorizontalBarChart({
     if (name === "Information Technology & Services") {
       return "IT Services";
     }
+    if (name === "Higher Education") {
+      return "Higher Ed";
+    }
     // Only for Industries chart when collapsed, break "IT Services & IT Consulting" into two lines
     if (isIndustriesChart && !isExpanded && name === "IT Services & IT Consulting") {
       return "IT Services &\nIT Consulting";
