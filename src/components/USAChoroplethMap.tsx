@@ -69,9 +69,6 @@ const USAChoroplethMap = ({ data, defaultMode = 'people', onStateClick, selected
     const [currentGeoUrl, setCurrentGeoUrl] = useState(geoUrl);
     const [mode, setMode] = useState<'people' | 'companies'>(defaultMode);
 
-    // Prop kept for future visual feedback; referenced to avoid TS6133
-    void selectedStates;
-
     // Effect to check if the map loads correctly
     useEffect(() => {
         const checkMapLoading = setTimeout(() => {
@@ -360,7 +357,12 @@ const USAChoroplethMap = ({ data, defaultMode = 'people', onStateClick, selected
                                         geographies.map(geo => {
                                             const stateCode = getStateCodeFromGeo(geo);
                                             const stateData = stateCounts.find(d => d.id === stateCode);
-                                            const fillColor = stateData ? colorScale(stateData.value) : "#EEE";
+                                            const baseColor = stateData ? colorScale(stateData.value) : "#EEE";
+                                            
+                                            // Dim non-selected states when there are selections
+                                            const hasSelections = selectedStates && selectedStates.size > 0;
+                                            const isSelected = selectedStates?.has(stateCode || '');
+                                            const fillColor = hasSelections && !isSelected ? "#E5E7EB" : baseColor;
 
                                             return (
                                                 <Geography
