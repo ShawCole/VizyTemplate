@@ -69,6 +69,9 @@ const USAChoroplethMap = ({ data, defaultMode = 'people', onStateClick, selected
     const [currentGeoUrl, setCurrentGeoUrl] = useState(geoUrl);
     const [mode, setMode] = useState<'people' | 'companies'>(defaultMode);
 
+    // Prop kept for future visual feedback; referenced to avoid TS6133
+    void selectedStates;
+
     // Effect to check if the map loads correctly
     useEffect(() => {
         const checkMapLoading = setTimeout(() => {
