@@ -37,14 +37,14 @@ const AGE_RANGE_ORDER = [
 
 // Add CREDIT_RATING_ORDER for alphabetical sorting
 const CREDIT_RATING_ORDER = [
-  'A',
-  'B',
-  'C',
-  'D',
-  'E',
-  'F',
-  'G',
-  'H'
+  'H',  // Under 499
+  'G',  // 500 - 549
+  'F',  // 550 - 599
+  'E',  // 600 - 649
+  'D',  // 650 - 699
+  'C',  // 700 - 749
+  'B',  // 750 - 799
+  'A'   // 800+
 ];
 
 // Add GENDER_ORDER for consistent sorting
