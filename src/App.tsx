@@ -7,13 +7,14 @@ import FilterNotes from './components/FilterNotes';
 import LogoUpload from './components/LogoUpload';
 import ContactData from './components/sections/ContactData';
 import TopHighlights from './components/sections/TopHighlights';
-import CompanyDetails from './components/sections/CompanyDetails';
 import AudienceDemographics from './components/sections/AudienceDemographics';
 import FinancialDetails from './components/sections/FinancialDetails';
 import USAChoroplethMap from './components/USAChoroplethMap';
 import CreditRating from './components/sections/CreditRating';
 import { B2BData, B2CData } from './types/data';
 import { getAvailableColumns } from './utils/validation';
+import { VerticalBarChart } from './components/charts/VerticalBarChart';
+import { transformData } from './utils/dataTransformers';
 import { ChartColorProvider, useChartColors } from './contexts/ChartColorContext';
 import ControlPanel from './components/ControlPanel';
 
@@ -255,12 +256,15 @@ function AppContent() {
                   <ContactData data={b2bFilteredData} />
                   <div className="space-y-6">
                     <TopHighlights data={b2bFilteredData} showUnknowns={showB2BUnknowns} />
-                    <CompanyDetails data={b2bFilteredData} showUnknowns={showB2BUnknowns} />
                   </div>
-                  <div className="col-span-2">
-                    <div className="text-center text-gray-500 py-8">
-                      Switch to B2C view to see state distribution
-                    </div>
+                  <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-[392px] lg:items-stretch xl:h-[444px] xl:items-stretch 2xl:h-[500px]">
+                    <VerticalBarChart
+                      data={transformData(b2bFilteredData, 'COMPANY_EMPLOYEE_COUNT' as keyof B2BData, undefined, showB2BUnknowns)}
+                      title="Company Size Distribution"
+                      color="#60A5FA"
+                      showUnknowns={showB2BUnknowns}
+                    />
+                    <USAChoroplethMap data={b2bFilteredData} />
                   </div>
                 </div>
               )}

@@ -15,12 +15,13 @@ const COMPANY_CHARTS = [
     key: 'COMPANY_EMPLOYEE_COUNT' as keyof B2BData,
     title: 'Company Size Distribution',
     color: '#60A5FA'
-  },
-  {
-    key: 'COMPANY_REVENUE' as keyof B2BData,
-    title: 'Company Revenue Distribution',
-    color: '#818CF8'
   }
+  // Company Revenue chart hidden - can be re-enabled later
+  // {
+  //   key: 'COMPANY_REVENUE' as keyof B2BData,
+  //   title: 'Company Revenue Distribution',
+  //   color: '#818CF8'
+  // }
 ];
 
 export default function CompanyDetails({ data, showUnknowns }: CompanyDetailsProps) {
