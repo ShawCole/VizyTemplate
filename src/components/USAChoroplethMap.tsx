@@ -58,9 +58,11 @@ const ADDITIONAL_REGIONS: Record<string, string> = {
 interface USAChoroplethMapProps {
     data: (B2BData | B2CData)[];
     defaultMode?: 'people' | 'companies';
+    onStateClick?: (stateCode: string) => void;
+    selectedStates?: Set<string>;
 }
 
-const USAChoroplethMap = ({ data, defaultMode = 'people' }: USAChoroplethMapProps) => {
+const USAChoroplethMap = ({ data, defaultMode = 'people', onStateClick, selectedStates }: USAChoroplethMapProps) => {
     const { colors } = useChartColors();
     const [tooltip, setTooltip] = useState({ show: false, content: "", x: 0, y: 0 });
     const [mapLoading, setMapLoading] = useState(true);
@@ -366,15 +368,22 @@ const USAChoroplethMap = ({ data, defaultMode = 'people' }: USAChoroplethMapProp
                                                     strokeWidth={0.5}
                                                     style={{
                                                         default: {
-                                                            outline: "none"
+                                                            outline: "none",
+                                                            cursor: onStateClick ? "pointer" : "default"
                                                         },
                                                         hover: {
                                                             fill: colors.accentColor,
                                                             outline: "none",
-                                                            transition: "all 250ms"
+                                                            transition: "all 250ms",
+                                                            cursor: onStateClick ? "pointer" : "default"
                                                         },
                                                         pressed: {
                                                             outline: "none"
+                                                        }
+                                                    }}
+                                                    onClick={() => {
+                                                        if (stateCode && onStateClick) {
+                                                            onStateClick(stateCode);
                                                         }
                                                     }}
                                                     onMouseEnter={(e) => {

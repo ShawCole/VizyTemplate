@@ -15,6 +15,8 @@ interface DataFilterProps {
   fileName: string;
   onDataFiltered: (filteredData: any[], showUnknowns: boolean) => void;
   showUnknowns: boolean;
+  externalStateFilter?: Set<string>;
+  onStateFilterChange?: (states: Set<string>) => void;
 }
 
 interface SubFilterState {
@@ -168,9 +170,28 @@ export default function DataFilter({
   data,
   fileName,
   onDataFiltered,
-  showUnknowns
+  showUnknowns,
+  externalStateFilter,
+  onStateFilterChange
 }: DataFilterProps) {
   const [selectedSubFilters, setSelectedSubFilters] = useState<SubFilterState>({});
+
+  // Sync external state filter with internal state
+  useEffect(() => {
+    if (externalStateFilter !== undefined) {
+      setSelectedSubFilters(prev => {
+        if (externalStateFilter.size === 0) {
+          const newState = { ...prev };
+          delete newState['STATE'];
+          return newState;
+        }
+        return {
+          ...prev,
+          STATE: externalStateFilter
+        };
+      });
+    }
+  }, [externalStateFilter]);
 
   const handleExport = () => {
     const baseFileName = `${fileName} - ${type.toUpperCase()}`;
@@ -221,14 +242,17 @@ export default function DataFilter({
   const handleSubFilterClick = (column: string, value: string) => {
     setSelectedSubFilters(prev => {
       const newState = { ...prev };
+      let newSet: Set<string>;
       if (!newState[column]) {
-        newState[column] = new Set([value]);
+        newSet = new Set([value]);
+        newState[column] = newSet;
       } else {
-        const newSet = new Set(newState[column]);
+        newSet = new Set(newState[column]);
         if (newSet.has(value)) {
           newSet.delete(value);
           if (newSet.size === 0) {
             delete newState[column];
+            newSet = new Set();
           } else {
             newState[column] = newSet;
           }
@@ -236,6 +260,10 @@ export default function DataFilter({
           newSet.add(value);
           newState[column] = newSet;
         }
+      }
+      // Sync STATE filter changes to parent
+      if (column === 'STATE' && onStateFilterChange) {
+        onStateFilterChange(newSet);
       }
       return newState;
     });
@@ -268,10 +296,14 @@ export default function DataFilter({
 
   const handleSelectAll = (column: string) => {
     const values = getUniqueValues(column);
+    const newSet = new Set(values);
     setSelectedSubFilters(prev => ({
       ...prev,
-      [column]: new Set(values)
+      [column]: newSet
     }));
+    if (column === 'STATE' && onStateFilterChange) {
+      onStateFilterChange(newSet);
+    }
   };
 
   const handleSelectNone = (column: string) => {
@@ -280,6 +312,9 @@ export default function DataFilter({
       delete newState[column];
       return newState;
     });
+    if (column === 'STATE' && onStateFilterChange) {
+      onStateFilterChange(new Set());
+    }
   };
 
   const filterDataByAllFilters = (data: any[]): any[] => {
