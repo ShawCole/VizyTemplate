@@ -41,12 +41,10 @@ function AppContent() {
   const [isB2BView, setIsB2BView] = useState(true);
   const [clientLogoVisible, setClientLogoVisible] = useState(true);
   const [ourLogoVisible, setOurLogoVisible] = useState(true);
-  const [b2bStateFilter, setB2BStateFilter] = useState<Set<string>>(new Set());
-  const [b2cStateFilter, setB2CStateFilter] = useState<Set<string>>(new Set());
+  const [stateFilter, setStateFilter] = useState<Set<string>>(new Set());
 
   const handleStateClick = useCallback((stateCode: string) => {
-    const setFilter = isB2BView ? setB2BStateFilter : setB2CStateFilter;
-    setFilter(prev => {
+    setStateFilter(prev => {
       const newSet = new Set(prev);
       if (newSet.has(stateCode)) {
         newSet.delete(stateCode);
@@ -55,7 +53,7 @@ function AppContent() {
       }
       return newSet;
     });
-  }, [isB2BView]);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -265,8 +263,8 @@ function AppContent() {
                 fileName={isB2BView ? b2bData.fileName : b2cData.fileName}
                 onDataFiltered={isB2BView ? handleB2BFiltered : handleB2CFiltered}
                 showUnknowns={isB2BView ? showB2BUnknowns : showB2CUnknowns}
-                externalStateFilter={isB2BView ? b2bStateFilter : b2cStateFilter}
-                onStateFilterChange={isB2BView ? setB2BStateFilter : setB2CStateFilter}
+                externalStateFilter={stateFilter}
+                onStateFilterChange={setStateFilter}
               />
               {isB2BView && b2bFilteredData && (
                 <div className="space-y-6">
@@ -285,7 +283,7 @@ function AppContent() {
                       data={b2bFilteredData}
                       defaultMode="companies"
                       onStateClick={handleStateClick}
-                      selectedStates={b2bStateFilter}
+                      selectedStates={stateFilter}
                     />
                   </div>
                 </div>
@@ -303,7 +301,7 @@ function AppContent() {
                       data={b2cFilteredData}
                       defaultMode="people"
                       onStateClick={handleStateClick}
-                      selectedStates={b2cStateFilter}
+                      selectedStates={stateFilter}
                     />
                   </div>
                 </div>

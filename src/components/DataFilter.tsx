@@ -176,23 +176,6 @@ export default function DataFilter({
 }: DataFilterProps) {
   const [selectedSubFilters, setSelectedSubFilters] = useState<SubFilterState>({});
 
-  // Sync external state filter with internal state
-  useEffect(() => {
-    if (externalStateFilter !== undefined) {
-      setSelectedSubFilters(prev => {
-        if (externalStateFilter.size === 0) {
-          const newState = { ...prev };
-          delete newState['STATE'];
-          return newState;
-        }
-        return {
-          ...prev,
-          STATE: externalStateFilter
-        };
-      });
-    }
-  }, [externalStateFilter]);
-
   const handleExport = () => {
     const baseFileName = `${fileName} - ${type.toUpperCase()}`;
     const columnNames = Array.from(activeColumns).map(col => col.replace(/_/g, ' ')).join(' - ');
@@ -240,19 +223,30 @@ export default function DataFilter({
   };
 
   const handleSubFilterClick = (column: string, value: string) => {
+    // STATE filter: update via parent callback only (no local state)
+    if (column === 'STATE' && onStateFilterChange) {
+      const currentStates = externalStateFilter || new Set<string>();
+      const newSet = new Set(currentStates);
+      if (newSet.has(value)) {
+        newSet.delete(value);
+      } else {
+        newSet.add(value);
+      }
+      onStateFilterChange(newSet);
+      return;
+    }
+    
+    // Other filters: update local state
     setSelectedSubFilters(prev => {
       const newState = { ...prev };
-      let newSet: Set<string>;
       if (!newState[column]) {
-        newSet = new Set([value]);
-        newState[column] = newSet;
+        newState[column] = new Set([value]);
       } else {
-        newSet = new Set(newState[column]);
+        const newSet = new Set(newState[column]);
         if (newSet.has(value)) {
           newSet.delete(value);
           if (newSet.size === 0) {
             delete newState[column];
-            newSet = new Set();
           } else {
             newState[column] = newSet;
           }
@@ -260,10 +254,6 @@ export default function DataFilter({
           newSet.add(value);
           newState[column] = newSet;
         }
-      }
-      // Sync STATE filter changes to parent
-      if (column === 'STATE' && onStateFilterChange) {
-        onStateFilterChange(newSet);
       }
       return newState;
     });
@@ -297,38 +287,53 @@ export default function DataFilter({
   const handleSelectAll = (column: string) => {
     const values = getUniqueValues(column);
     const newSet = new Set(values);
+    
+    // STATE filter: update via parent callback only
+    if (column === 'STATE' && onStateFilterChange) {
+      onStateFilterChange(newSet);
+      return;
+    }
+    
     setSelectedSubFilters(prev => ({
       ...prev,
       [column]: newSet
     }));
-    if (column === 'STATE' && onStateFilterChange) {
-      onStateFilterChange(newSet);
-    }
   };
 
   const handleSelectNone = (column: string) => {
+    // STATE filter: update via parent callback only
+    if (column === 'STATE' && onStateFilterChange) {
+      onStateFilterChange(new Set());
+      return;
+    }
+    
     setSelectedSubFilters(prev => {
       const newState = { ...prev };
       delete newState[column];
       return newState;
     });
-    if (column === 'STATE' && onStateFilterChange) {
-      onStateFilterChange(new Set());
-    }
   };
 
   const filterDataByAllFilters = (data: any[]): any[] => {
     return data.filter(item => {
+      // Check STATE filter from externalStateFilter (not local state)
+      if (externalStateFilter && externalStateFilter.size > 0) {
+        if (!externalStateFilter.has(item['PERSONAL_STATE'])) {
+          return false;
+        }
+      }
+      
+      // Check other filters from local selectedSubFilters
       return Object.entries(selectedSubFilters).every(([column, values]) => {
+        // Skip STATE - handled above via externalStateFilter
+        if (column === 'STATE') {
+          return true;
+        }
         if (column === 'EMAIL') {
           return Array.from(values).some(value => {
             const field = value === 'Personal Email' ? 'PERSONAL_EMAIL' : 'BUSINESS_EMAIL';
             return item[field] && item[field].length > 0;
           });
-        }
-        if (column === 'STATE') {
-          const rawValues = Array.from(values).map(v => getRawValue(column, v));
-          return rawValues.includes(item['PERSONAL_STATE']);
         }
         const rawValues = Array.from(values).map(v => getRawValue(column, v));
         return rawValues.includes(item[column]);
@@ -339,7 +344,7 @@ export default function DataFilter({
   useEffect(() => {
     const filteredData = filterDataByAllFilters(data);
     onDataFiltered(filteredData, showUnknowns);
-  }, [data, selectedSubFilters, showUnknowns, onDataFiltered]);
+  }, [data, selectedSubFilters, externalStateFilter, showUnknowns, onDataFiltered]);
 
   const getUniqueValues = (column: string) => {
     if (column === 'EMAIL') {
@@ -512,21 +517,27 @@ export default function DataFilter({
                 : 'flex flex-wrap gap-2 max-h-40 overflow-y-auto'
                 }`}
                 style={column === 'STATE' ? { gridTemplateColumns: 'repeat(25, minmax(0, 1fr))' } : undefined}>
-                {getUniqueValues(column).map((value) => (
-                  <button
-                    key={value}
-                    onClick={() => handleSubFilterClick(column, value)}
-                    className={`${column === 'STATE'
-                      ? 'text-xs h-8 w-8 flex items-center justify-center rounded'
-                      : 'px-3 py-1 rounded-full'
-                      } transition-colors ${selectedSubFilters[column]?.has(value)
-                        ? 'accent-bg text-white'
-                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                      }`}
-                  >
-                    {getDisplayValue(column, value)}
-                  </button>
-                ))}
+                {getUniqueValues(column).map((value) => {
+                  // Use externalStateFilter for STATE, local state for others
+                  const isSelected = column === 'STATE'
+                    ? externalStateFilter?.has(value)
+                    : selectedSubFilters[column]?.has(value);
+                  return (
+                    <button
+                      key={value}
+                      onClick={() => handleSubFilterClick(column, value)}
+                      className={`${column === 'STATE'
+                        ? 'text-xs h-8 w-8 flex items-center justify-center rounded'
+                        : 'px-3 py-1 rounded-full'
+                        } transition-colors ${isSelected
+                          ? 'accent-bg text-white'
+                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                        }`}
+                    >
+                      {getDisplayValue(column, value)}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )
