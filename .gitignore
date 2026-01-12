@@ -36,3 +36,10 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log* .cursor/
+
+# Local workspace backups and nested repos
+old-vizytemplate/
+repos_to_pull_from/
+example_data/
+past_conversations/
+update_plan/
