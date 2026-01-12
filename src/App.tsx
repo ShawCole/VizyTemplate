@@ -170,7 +170,6 @@ function AppContent() {
             b2cData={b2cFilteredData}
             showB2BUnknowns={showB2BUnknowns}
             showB2CUnknowns={showB2CUnknowns}
-            isB2BView={isB2BView}
           />
         ) : (
           <>

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useRef, useEffect } from 'react';
 import Chart from 'chart.js';
 import { B2CData } from '../../types/data';

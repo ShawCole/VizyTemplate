@@ -15,7 +15,6 @@ interface NewDashboardProps {
   b2cData: B2CData[] | null;
   showB2BUnknowns: boolean;
   showB2CUnknowns: boolean;
-  isB2BView: boolean;
 }
 
 const NewDashboard: React.FC<NewDashboardProps> = ({
@@ -23,8 +22,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
   b2bData,
   b2cData,
   showB2BUnknowns,
-  showB2CUnknowns,
-  isB2BView
+  showB2CUnknowns
 }) => {
   const { colors } = useChartColors();
 
