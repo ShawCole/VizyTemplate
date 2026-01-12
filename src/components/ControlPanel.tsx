@@ -16,6 +16,8 @@ interface ControlPanelProps {
     setClientLogoVisible: (visible: boolean) => void;
     ourLogoVisible: boolean;
     setOurLogoVisible: (visible: boolean) => void;
+    showNewMapViewButton?: boolean;
+    onTryNewMapView?: () => void;
 }
 
 export default function ControlPanel({
@@ -30,12 +32,24 @@ export default function ControlPanel({
     clientLogoVisible,
     setClientLogoVisible,
     ourLogoVisible,
-    setOurLogoVisible
+    setOurLogoVisible,
+    showNewMapViewButton,
+    onTryNewMapView
 }: ControlPanelProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="fixed top-4 right-4 z-50">
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-4">
+            {/* New Map View Button */}
+            {showNewMapViewButton && onTryNewMapView && (
+                <button
+                    onClick={onTryNewMapView}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition-colors font-medium text-sm"
+                >
+                    Try New Map View
+                </button>
+            )}
+
             {/* Hamburger Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}

@@ -35,3 +35,8 @@
         border-color: var(--accent-color-hover);
     }
 }
+
+/* Ensure Recharts labels aren't clipped by the SVG boundary */
+.recharts-surface {
+    overflow: visible !important;
+}

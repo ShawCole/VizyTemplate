@@ -112,17 +112,26 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
       }
     }
 
+    // Shorten Company Size labels to prevent clipping
+    if (title.includes('Company Size')) {
+      if (value === '501 to 1000') return '501 to 1k';
+      if (value === '1001 to 5000') return '1k to 5k';
+      if (value === '5001 to 10000') return '5k to 10k';
+      if (value === '10000+') return '10k+';
+    }
+
     return value;
   };
 
   const chartContent = (
-    <>
-      {title && !noWrapper && <h3 className="text-xl font-semibold text-gray-800 mb-4">{title}</h3>}
-      <div className="flex-1 min-h-[280px] lg:min-h-[250px] xl:min-h-[280px]">
-        <ResponsiveContainer width="100%" height="100%">
+    <div className="flex flex-col h-full">
+      {title && <h3 className="text-xl font-semibold text-gray-800 mb-4">{title}</h3>}
+      <div className="flex-grow min-h-0" style={{ overflow: 'visible' }}>
+        <ResponsiveContainer width="100%" height="100%" style={{ overflow: 'visible' }}>
           <BarChart
             data={displayData}
             margin={getResponsiveMargins()}
+            style={{ overflow: 'visible' }}
           >
             <XAxis
               dataKey="name"
@@ -132,7 +141,7 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
               interval={0}
               tickFormatter={formatAxisTick}
               tick={{
-                fontSize: isFinancialChart || title.includes('Company Size') || title.includes('Company Revenue') || title.includes('Credit Rating') ? 13 : 12
+                fontSize: isFinancialChart || title.includes('Company Size') || title.includes('Company Revenue') || title.includes('Credit Rating') ? 16 : 12
               }}
               tickMargin={4}
             />
@@ -155,7 +164,7 @@ export function VerticalBarChart({ data, title, color, showUnknowns = false, hei
           </BarChart>
         </ResponsiveContainer>
       </div>
-    </>
+    </div>
   );
 
   if (noWrapper) {

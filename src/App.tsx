@@ -17,6 +17,7 @@ import { VerticalBarChart } from './components/charts/VerticalBarChart';
 import { transformData } from './utils/dataTransformers';
 import { ChartColorProvider, useChartColors } from './contexts/ChartColorContext';
 import ControlPanel from './components/ControlPanel';
+import NewDashboard from './components/NewDashboard';
 
 interface DataState {
   data: B2BData[] | B2CData[] | null;
@@ -42,6 +43,7 @@ function AppContent() {
   const [clientLogoVisible, setClientLogoVisible] = useState(true);
   const [ourLogoVisible, setOurLogoVisible] = useState(true);
   const [stateFilter, setStateFilter] = useState<Set<string>>(new Set());
+  const [showNewMapView, setShowNewMapView] = useState(false);
 
   const handleStateClick = useCallback((stateCode: string) => {
     setStateFilter(prev => {
@@ -155,159 +157,176 @@ function AppContent() {
         setClientLogoVisible={setClientLogoVisible}
         ourLogoVisible={ourLogoVisible}
         setOurLogoVisible={setOurLogoVisible}
+        showNewMapViewButton={(b2bData.data || b2cData.data) !== null && !showNewMapView}
+        onTryNewMapView={() => setShowNewMapView(true)}
       />
       <div className="container mx-auto px-4 py-12">
-        <header className="text-center mb-12">
-          {showUploadSection && (
-            <>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              </h1>
 
-              {clientLogoVisible && (
-                <div className="flex justify-center mb-16">
-                  <LogoUpload
-                    style={{ width: `${logoSize}px`, height: 'auto' }}
-                    onLogoChange={setLogoUrl}
-                  />
-                </div>
+
+        {showNewMapView ? (
+          <NewDashboard
+            onBack={() => setShowNewMapView(false)}
+            b2bData={b2bFilteredData}
+            b2cData={b2cFilteredData}
+            showB2BUnknowns={showB2BUnknowns}
+            showB2CUnknowns={showB2CUnknowns}
+            isB2BView={isB2BView}
+          />
+        ) : (
+          <>
+            <header className="text-center mb-12">
+              {showUploadSection && (
+                <>
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                  </h1>
+
+                  {clientLogoVisible && (
+                    <div className="flex justify-center mb-16">
+                      <LogoUpload
+                        style={{ width: `${logoSize}px`, height: 'auto' }}
+                        onLogoChange={setLogoUrl}
+                      />
+                    </div>
+                  )}
+
+                  {ourLogoVisible && (
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <h1 className="text-2xl font-semibold text-gray-800">Presented by:</h1>
+                      <LogoUpload
+                        style={{ width: `${secondaryLogoSize}px`, height: 'auto' }}
+                        onLogoChange={setSecondaryLogoUrl}
+                      />
+                    </div>
+                  )}
+                  <p className="text-lg text-gray-600">Upload your B2B or B2C data to get started</p>
+                </>
               )}
 
-              {ourLogoVisible && (
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <h1 className="text-2xl font-semibold text-gray-800">Presented by:</h1>
-                  <LogoUpload
-                    style={{ width: `${secondaryLogoSize}px`, height: 'auto' }}
-                    onLogoChange={setSecondaryLogoUrl}
-                  />
-                </div>
-              )}
-              <p className="text-lg text-gray-600">Upload your B2B or B2C data to get started</p>
-            </>
-          )}
-
-          {!showUploadSection && (
-            <div className="flex flex-col items-center">
-              {clientLogoVisible && (
-                <div className="flex justify-center mb-10">
-                  {logoUrl ? (
-                    <img
-                      src={logoUrl}
-                      alt="Company Logo"
-                      style={{ width: `${logoSize}px`, height: 'auto' }}
-                    />
-                  ) : (
-                    <LogoUpload
-                      style={{ width: `${logoSize}px`, height: 'auto' }}
-                      onLogoChange={setLogoUrl}
-                    />
+              {!showUploadSection && (
+                <div className="flex flex-col items-center">
+                  {clientLogoVisible && (
+                    <div className="flex justify-center mb-10">
+                      {logoUrl ? (
+                        <img
+                          src={logoUrl}
+                          alt="Company Logo"
+                          style={{ width: `${logoSize}px`, height: 'auto' }}
+                        />
+                      ) : (
+                        <LogoUpload
+                          style={{ width: `${logoSize}px`, height: 'auto' }}
+                          onLogoChange={setLogoUrl}
+                        />
+                      )}
+                    </div>
+                  )}
+                  {ourLogoVisible && (
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                      <h1 className="text-2xl font-semibold text-gray-800">Presented by:</h1>
+                      {secondaryLogoUrl ? (
+                        <img
+                          src={secondaryLogoUrl}
+                          alt="Secondary Logo"
+                          style={{ width: `${secondaryLogoSize}px`, height: 'auto' }}
+                        />
+                      ) : (
+                        <LogoUpload
+                          style={{ width: `${secondaryLogoSize}px`, height: 'auto' }}
+                          onLogoChange={setSecondaryLogoUrl}
+                        />
+                      )}
+                    </div>
                   )}
                 </div>
               )}
-              {ourLogoVisible && (
-                <div className="flex items-center justify-center gap-4 mb-4">
-                  <h1 className="text-2xl font-semibold text-gray-800">Presented by:</h1>
-                  {secondaryLogoUrl ? (
-                    <img
-                      src={secondaryLogoUrl}
-                      alt="Secondary Logo"
-                      style={{ width: `${secondaryLogoSize}px`, height: 'auto' }}
-                    />
-                  ) : (
-                    <LogoUpload
-                      style={{ width: `${secondaryLogoSize}px`, height: 'auto' }}
-                      onLogoChange={setSecondaryLogoUrl}
-                    />
+            </header>
+
+            {showUploadSection && (
+              <div className="flex flex-col md:flex-row gap-6 justify-center items-stretch mb-8">
+                <FileUpload type="b2b" onDataLoaded={handleB2BDataLoaded as (data: B2BData[] | B2CData[], fileName: string) => void} />
+                <FileUpload type="b2c" onDataLoaded={handleB2CDataLoaded as (data: B2BData[] | B2CData[], fileName: string) => void} />
+              </div>
+            )}
+
+            {(b2bData.data || b2cData.data) && showUploadSection && (
+              <div className="space-y-8">
+                <FileInfo
+                  b2bFileName={b2bData.fileName}
+                  b2cFileName={b2cData.fileName}
+                  b2bRecords={b2bData.data?.length}
+                  b2cRecords={b2cData.data?.length}
+                />
+              </div>
+            )}
+
+            {(b2bData.data || b2cData.data) && (
+              <div className="space-y-8 mb-8">
+                <FilterNotes initialTitle="Edit Title" />
+              </div>
+            )}
+
+            {currentData && (
+              <div className="space-y-6 mt-12">
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+                    {isB2BView ? 'B2B Dataset' : 'B2C Dataset'}
+                  </h2>
+                  <DataFilter
+                    type={isB2BView ? 'b2b' : 'b2c'}
+                    availableColumns={getAvailableColumns(currentData, isB2BView ? 'b2b' : 'b2c')}
+                    activeColumns={isB2BView ? activeB2BColumns : activeB2CColumns}
+                    onColumnSelect={isB2BView ? handleB2BColumnSelect : handleB2CColumnSelect}
+                    data={currentData}
+                    fileName={isB2BView ? b2bData.fileName : b2cData.fileName}
+                    onDataFiltered={isB2BView ? handleB2BFiltered : handleB2CFiltered}
+                    showUnknowns={isB2BView ? showB2BUnknowns : showB2CUnknowns}
+                    externalStateFilter={stateFilter}
+                    onStateFilterChange={setStateFilter}
+                  />
+                  {isB2BView && b2bFilteredData && (
+                    <div className="space-y-6">
+                      <ContactData data={b2bFilteredData} />
+                      <div className="space-y-6">
+                        <TopHighlights data={b2bFilteredData} showUnknowns={showB2BUnknowns} />
+                      </div>
+                      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-[392px] lg:items-stretch xl:h-[444px] xl:items-stretch 2xl:h-[500px]">
+                        <VerticalBarChart
+                          data={transformData(b2bFilteredData, 'COMPANY_EMPLOYEE_COUNT' as keyof B2BData, undefined, showB2BUnknowns)}
+                          title="Company Size Distribution"
+                          color="#60A5FA"
+                          showUnknowns={showB2BUnknowns}
+                        />
+                        <USAChoroplethMap
+                          data={b2bFilteredData}
+                          defaultMode="companies"
+                          onStateClick={handleStateClick}
+                          selectedStates={stateFilter}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {!isB2BView && b2cFilteredData && (
+                    <div className="space-y-6">
+                      <ContactData data={b2cFilteredData} />
+                      <div className="space-y-6">
+                        <AudienceDemographics data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
+                        <FinancialDetails data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
+                      </div>
+                      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-[392px] lg:items-stretch xl:h-[444px] xl:items-stretch 2xl:h-[500px]">
+                        <CreditRating data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
+                        <USAChoroplethMap
+                          data={b2cFilteredData}
+                          defaultMode="people"
+                          onStateClick={handleStateClick}
+                          selectedStates={stateFilter}
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
-          )}
-        </header>
-
-        {showUploadSection && (
-          <div className="flex flex-col md:flex-row gap-6 justify-center items-stretch mb-8">
-            <FileUpload type="b2b" onDataLoaded={handleB2BDataLoaded as (data: B2BData[] | B2CData[], fileName: string) => void} />
-            <FileUpload type="b2c" onDataLoaded={handleB2CDataLoaded as (data: B2BData[] | B2CData[], fileName: string) => void} />
-          </div>
-        )}
-
-        {(b2bData.data || b2cData.data) && showUploadSection && (
-          <div className="space-y-8">
-            <FileInfo
-              b2bFileName={b2bData.fileName}
-              b2cFileName={b2cData.fileName}
-              b2bRecords={b2bData.data?.length}
-              b2cRecords={b2cData.data?.length}
-            />
-          </div>
-        )}
-
-        {(b2bData.data || b2cData.data) && (
-          <div className="space-y-8 mb-8">
-            <FilterNotes initialTitle="Edit Title" />
-          </div>
-        )}
-
-        {currentData && (
-          <div className="space-y-6 mt-12">
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-                {isB2BView ? 'B2B Dataset' : 'B2C Dataset'}
-              </h2>
-              <DataFilter
-                type={isB2BView ? 'b2b' : 'b2c'}
-                availableColumns={getAvailableColumns(currentData, isB2BView ? 'b2b' : 'b2c')}
-                activeColumns={isB2BView ? activeB2BColumns : activeB2CColumns}
-                onColumnSelect={isB2BView ? handleB2BColumnSelect : handleB2CColumnSelect}
-                data={currentData}
-                fileName={isB2BView ? b2bData.fileName : b2cData.fileName}
-                onDataFiltered={isB2BView ? handleB2BFiltered : handleB2CFiltered}
-                showUnknowns={isB2BView ? showB2BUnknowns : showB2CUnknowns}
-                externalStateFilter={stateFilter}
-                onStateFilterChange={setStateFilter}
-              />
-              {isB2BView && b2bFilteredData && (
-                <div className="space-y-6">
-                  <ContactData data={b2bFilteredData} />
-                  <div className="space-y-6">
-                    <TopHighlights data={b2bFilteredData} showUnknowns={showB2BUnknowns} />
-                  </div>
-                  <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-[392px] lg:items-stretch xl:h-[444px] xl:items-stretch 2xl:h-[500px]">
-                    <VerticalBarChart
-                      data={transformData(b2bFilteredData, 'COMPANY_EMPLOYEE_COUNT' as keyof B2BData, undefined, showB2BUnknowns)}
-                      title="Company Size Distribution"
-                      color="#60A5FA"
-                      showUnknowns={showB2BUnknowns}
-                    />
-                    <USAChoroplethMap
-                      data={b2bFilteredData}
-                      defaultMode="companies"
-                      onStateClick={handleStateClick}
-                      selectedStates={stateFilter}
-                    />
-                  </div>
-                </div>
-              )}
-              {!isB2BView && b2cFilteredData && (
-                <div className="space-y-6">
-                  <ContactData data={b2cFilteredData} />
-                  <div className="space-y-6">
-                    <AudienceDemographics data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
-                    <FinancialDetails data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
-                  </div>
-                  <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-[392px] lg:items-stretch xl:h-[444px] xl:items-stretch 2xl:h-[500px]">
-                    <CreditRating data={b2cFilteredData} showUnknowns={showB2CUnknowns} />
-                    <USAChoroplethMap
-                      data={b2cFilteredData}
-                      defaultMode="people"
-                      onStateClick={handleStateClick}
-                      selectedStates={stateFilter}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

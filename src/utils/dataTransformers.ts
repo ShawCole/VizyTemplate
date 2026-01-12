@@ -15,14 +15,24 @@ const COMPANY_SIZE_ORDER = [
 
 const REVENUE_ORDER = [
   'Under 1 Million',
+  '< $1M',
+  '1 Million To 5 Million',
   '1 Million to 5 Million',
+  '5 Million To 10 Million',
   '5 Million to 10 Million',
+  '10 Million To 25 Million',
   '10 Million to 25 Million',
+  '25 Million To 50 Million',
   '25 Million to 50 Million',
+  '50 Million To 100 Million',
   '50 Million to 100 Million',
+  '100 Million To 250 Million',
   '100 Million to 250 Million',
+  '250 Million To 500 Million',
   '250 Million to 500 Million',
+  '500 Million To 1 Billion',
   '500 Million to 1 Billion',
+  '1 Billion And Over',
   '1 Billion and Over'
 ];
 
@@ -99,14 +109,24 @@ export const NET_WORTH_ORDER = [
 
 const REVENUE_LABELS: Record<string, string> = {
   'Under 1 Million': '< $1M',
+  '< $1M': '< $1M',
+  '1 Million To 5 Million': '$1M - $5M',
   '1 Million to 5 Million': '$1M - $5M',
+  '5 Million To 10 Million': '$5M - $10M',
   '5 Million to 10 Million': '$5M - $10M',
+  '10 Million To 25 Million': '$10M - $25M',
   '10 Million to 25 Million': '$10M - $25M',
+  '25 Million To 50 Million': '$25M - $50M',
   '25 Million to 50 Million': '$25M - $50M',
+  '50 Million To 100 Million': '$50M - $100M',
   '50 Million to 100 Million': '$50M - $100M',
+  '100 Million To 250 Million': '$100M - $250M',
   '100 Million to 250 Million': '$100M - $250M',
+  '250 Million To 500 Million': '$250M - $500M',
   '250 Million to 500 Million': '$250M - $500M',
+  '500 Million To 1 Billion': '$500M - $1B',
   '500 Million to 1 Billion': '$500M - $1B',
+  '1 Billion And Over': '> $1B',
   '1 Billion and Over': '> $1B'
 };
 
