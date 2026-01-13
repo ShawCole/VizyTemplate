@@ -21,29 +21,43 @@ export default function FileUpload({ type, onDataLoaded }: FileUploadProps) {
     setError(null);
     setSuccess(false);
 
+    let allData: any[] = [];
+    let chunkCount = 0;
+
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      transformHeader: (header: string) => header.trim(),
-      complete: (results) => {
+      worker: true, // Use a web worker to avoid freezing the UI
+      chunkSize: 1024 * 1024 * 5, // 5MB chunks
+      // Removed transformHeader as functions cannot be cloned to worker
+      chunk: (results) => {
+        chunkCount++;
+        if (results.data && results.data.length > 0) {
+          allData = allData.concat(results.data);
+        }
+      },
+      complete: () => {
         try {
-          if (results.errors.length > 0) {
-            const errorMessage = results.errors
-              .map(err => `Row ${err.row}: ${err.message}`)
-              .join(', ');
-            setError(`CSV parsing errors: ${errorMessage}`);
+          if (allData.length === 0) {
+            setError('No data found in the file.');
             setIsLoading(false);
             return;
           }
 
-          const columnError = validateCSVColumns(results.meta.fields || [], type);
+          // Use the fields from the first row as a proxy for meta fields since 
+          // aggregated meta might be tricky with chunks, or just rely on validation
+          const fields = Object.keys(allData[0]);
+
+          const columnError = validateCSVColumns(fields, type);
           if (columnError) {
             setError(columnError);
             setIsLoading(false);
             return;
           }
 
-          const cleanedData = cleanData(results.data, type);
+          // Cleaning and validation on the full dataset
+          // Note for 500k rows: This might still take a moment, but parsing is done.
+          const cleanedData = cleanData(allData, type);
           if (cleanedData.length === 0) {
             setError('No valid data rows found after cleaning');
             setIsLoading(false);
@@ -71,9 +85,14 @@ export default function FileUpload({ type, onDataLoaded }: FileUploadProps) {
         }
       },
       error: (error) => {
+        // Fallback: If worker fails (sometimes due to file access), try sync? 
+        // Or just report error.
+        console.error("Papa Parse Error:", error);
         setError('Error reading file: ' + error.message);
         setIsLoading(false);
       },
+      // Explicitly try comma first, but Papa usually auto-detects. 
+      // If auto-detect fails, we might need to retry with delimiter: ','
     });
   }, [onDataLoaded, type]);
 

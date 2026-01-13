@@ -23,7 +23,9 @@ const B2C_REQUIRED_COLUMNS = [
 
 export function validateCSVColumns(headers: string[], type: DatasetType): string | null {
   const requiredColumns = type === 'b2b' ? B2B_REQUIRED_COLUMNS : B2C_REQUIRED_COLUMNS;
-  const missingColumns = requiredColumns.filter(col => !headers.includes(col));
+  // Normalize headers by trimming whitespace
+  const normalizedHeaders = headers.map(h => h.trim());
+  const missingColumns = requiredColumns.filter(col => !normalizedHeaders.includes(col));
 
   if (missingColumns.length === requiredColumns.length) {
     return `No valid columns found for ${type.toUpperCase()} data`;

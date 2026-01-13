@@ -26,6 +26,61 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
 }) => {
   const { colors } = useChartColors();
 
+  const creditRatingData = React.useMemo(() =>
+    transformData(b2cData || [], 'SKIPTRACE_CREDIT_RATING', undefined, showB2CUnknowns),
+    [b2cData, showB2CUnknowns]
+  );
+
+  const companySizeData = React.useMemo(() =>
+    transformData(b2bData || [], 'COMPANY_EMPLOYEE_COUNT', undefined, showB2BUnknowns),
+    [b2bData, showB2BUnknowns]
+  );
+
+  const maritalStatusData = React.useMemo(() =>
+    transformData(b2cData || [], 'MARRIED', undefined, showB2CUnknowns),
+    [b2cData, showB2CUnknowns]
+  );
+
+  const childrenData = React.useMemo(() =>
+    transformData(b2cData || [], 'CHILDREN', undefined, showB2CUnknowns),
+    [b2cData, showB2CUnknowns]
+  );
+
+  const incomeData = React.useMemo(() =>
+    transformData(b2cData || [], 'INCOME_RANGE', undefined, showB2CUnknowns),
+    [b2cData, showB2CUnknowns]
+  );
+
+  const netWorthData = React.useMemo(() =>
+    transformData(b2cData || [], 'NET_WORTH', undefined, showB2CUnknowns),
+    [b2cData, showB2CUnknowns]
+  );
+
+  const industryData = React.useMemo(() =>
+    transformData(b2bData || [], 'COMPANY_INDUSTRY', 15, showB2BUnknowns),
+    [b2bData, showB2BUnknowns]
+  );
+
+  const jobTitleData = React.useMemo(() =>
+    transformData(b2bData || [], 'JOB_TITLE', 15, showB2BUnknowns),
+    [b2bData, showB2BUnknowns]
+  );
+
+  const departmentData = React.useMemo(() =>
+    transformData(b2bData || [], 'DEPARTMENT', 15, showB2BUnknowns),
+    [b2bData, showB2BUnknowns]
+  );
+
+  const seniorityData = React.useMemo(() =>
+    transformData(b2bData || [], 'SENIORITY_LEVEL', undefined, showB2BUnknowns),
+    [b2bData, showB2BUnknowns]
+  );
+
+  const revenueData = React.useMemo(() =>
+    transformData(b2bData || [], 'COMPANY_REVENUE', undefined, showB2BUnknowns),
+    [b2bData, showB2BUnknowns]
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-12">
@@ -74,7 +129,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
           <div className="col-span-12 lg:col-span-6 h-[500px]">
             {b2cData && b2cData.length > 0 ? (
               <VerticalBarChart
-                data={transformData(b2cData, 'SKIPTRACE_CREDIT_RATING', undefined, showB2CUnknowns)}
+                data={creditRatingData}
                 title="Credit Rating Distribution"
                 color={colors.primaryColor3}
                 showUnknowns={showB2CUnknowns}
@@ -90,7 +145,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
           <div className="col-span-12 lg:col-span-6 h-[500px]">
             {b2bData && b2bData.length > 0 ? (
               <VerticalBarChart
-                data={transformData(b2bData, 'COMPANY_EMPLOYEE_COUNT', undefined, showB2BUnknowns)}
+                data={companySizeData}
                 title="Company Size Distribution"
                 color="#60A5FA"
                 showUnknowns={showB2BUnknowns}
@@ -109,7 +164,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
               <div className="h-[400px]">
                 {b2cData && b2cData.length > 0 ? (
                   <DoughnutChart
-                    data={transformData(b2cData, 'MARRIED', undefined, showB2CUnknowns)}
+                    data={maritalStatusData}
                     title="Marital Status"
                     isSemi={true}
                     showUnknowns={showB2CUnknowns}
@@ -124,7 +179,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
               <div className="h-[400px]">
                 {b2cData && b2cData.length > 0 ? (
                   <DoughnutChart
-                    data={transformData(b2cData, 'CHILDREN', undefined, showB2CUnknowns)}
+                    data={childrenData}
                     title="Children"
                     isSemi={true}
                     showUnknowns={showB2CUnknowns}
@@ -146,7 +201,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
               <div className="h-[500px]">
                 {b2cData && b2cData.length > 0 ? (
                   <VerticalBarChart
-                    data={transformData(b2cData, 'INCOME_RANGE', undefined, showB2CUnknowns)}
+                    data={incomeData}
                     title="Income Distribution"
                     color="#60A5FA"
                     showUnknowns={showB2CUnknowns}
@@ -160,7 +215,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
               <div className="h-[500px]">
                 {b2cData && b2cData.length > 0 ? (
                   <VerticalBarChart
-                    data={transformData(b2cData, 'NET_WORTH', undefined, showB2CUnknowns)}
+                    data={netWorthData}
                     title="Net Worth Distribution"
                     color="#818CF8"
                     showUnknowns={showB2CUnknowns}
@@ -181,7 +236,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
               <div className="h-auto">
                 {b2bData && b2bData.length > 0 ? (
                   <HorizontalBarChart
-                    data={transformData(b2bData, 'COMPANY_INDUSTRY', 15, showB2BUnknowns)}
+                    data={industryData}
                     title="Industries"
                     color="#60A5FA"
                     initialDisplay={5}
@@ -196,7 +251,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
               <div className="h-auto">
                 {b2bData && b2bData.length > 0 ? (
                   <HorizontalBarChart
-                    data={transformData(b2bData, 'JOB_TITLE', 15, showB2BUnknowns)}
+                    data={jobTitleData}
                     title="Job Titles"
                     color="#818CF8"
                     initialDisplay={5}
@@ -211,7 +266,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
               <div className="h-auto">
                 {b2bData && b2bData.length > 0 ? (
                   <HorizontalBarChart
-                    data={transformData(b2bData, 'DEPARTMENT', 15, showB2BUnknowns)}
+                    data={departmentData}
                     title="Departments"
                     color="#A78BFA"
                     initialDisplay={5}
@@ -226,7 +281,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
               <div className="h-auto">
                 {b2bData && b2bData.length > 0 ? (
                   <HorizontalBarChart
-                    data={transformData(b2bData, 'SENIORITY_LEVEL', undefined, showB2BUnknowns)}
+                    data={seniorityData}
                     title="Seniority Levels"
                     color="#C084FC"
                     initialDisplay={5}
@@ -247,7 +302,7 @@ const NewDashboard: React.FC<NewDashboardProps> = ({
             <div className="h-[500px]">
               {b2bData && b2bData.length > 0 ? (
                 <VerticalBarChart
-                  data={transformData(b2bData, 'COMPANY_REVENUE', undefined, showB2BUnknowns)}
+                  data={revenueData}
                   title="Company Revenue Distribution"
                   color="#818CF8"
                   showUnknowns={showB2BUnknowns}
